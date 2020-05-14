@@ -1,0 +1,7 @@
+---
+title: "get-sress-response-list"
+output: html_document
+---
+Rmd to get a list of Trinity IDs from the transcriptome that are associated with the GOslim term 'stress response'. The list should have 
+35478 rows (https://github.com/RobertsLab/paper-crab/blob/master/notebooks/transcriptome-BLAST-to-GOslim.ipynb)
+
