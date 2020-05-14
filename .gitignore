@@ -1,0 +1,10 @@
+
+.DS_Store
+analyses/BLAST-to-GOslim/_blast-annot.tab
+analyses/BLAST-to-GOslim/_blast-GO-unfolded.sorted
+analyses/BLAST-to-GOslim/_blast-GO-unfolded.tab
+analyses/BLAST-to-GOslim/_blast-sort.tab
+analyses/BLAST-to-GOslim/_intermediate.file
+analyses/BLAST-to-GOslim/GO-GOslim.sorted
+analyses/BLAST-to-GOslim/uniprot-SP-GO.sorted
+notebooks/.ipynb_checkpoints/transcriptome-BLAST-to-GOslim-checkpoint.ipynb
