@@ -8,3 +8,4 @@ analyses/BLAST-to-GOslim/_intermediate.file
 analyses/BLAST-to-GOslim/GO-GOslim.sorted
 analyses/BLAST-to-GOslim/uniprot-SP-GO.sorted
 notebooks/.ipynb_checkpoints/transcriptome-BLAST-to-GOslim-checkpoint.ipynb
+.Rproj.user
