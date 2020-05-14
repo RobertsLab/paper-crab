@@ -5,3 +5,107 @@ output: html_document
 Rmd to get a list of Trinity IDs from the transcriptome that are associated with the GOslim term 'stress response'. The list should have 
 35478 rows (https://github.com/RobertsLab/paper-crab/blob/master/notebooks/transcriptome-BLAST-to-GOslim.ipynb)
 
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+### Read in the uniprot-SP-GO.sorted file from the jupyter notebook listed above:
+```{r}
+uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_sp_GO)
+```
+168361 rows, 12 cols
+
+#### Rename column "V1" to "uniprot_acc_ID"
+```{r}
+colnames(uniprot_sp_GO) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_sp_GO)
+```
+
+### Read in the `BLAST` output, but the one that is called "_blast-sep.tab" from the above jupyter notebook
+```{r}
+blastout <- read.delim("../analyses/BLAST-to-GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+head(blastout)
+```
+147454 rows, 14 cols
+
+#### Rename columnn "V3" --> "uniprot_acc_ID"
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+
+### `join` blastout and uniprot_sp_GO by "uniprot_acc_ID" column:
+```{r}
+blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
+head(blastout_uniprot)
+```
+147454 rows, 25 cols
+
+Call out number of Trinity IDs that have GO terms (stat for paper)
+```{r}
+GOblast <- blastout_uniprot %>%
+  filter(str_detect(review_status, "reviewed"))
+head(GOblast)
+```
+
+70078 of the transcriptome `blast` output hits with swissprot/uniprot have GO annotations. 
+
+### Read in the table from the BLAST to GOslim jupter notebook linked above called "Blastquery-GOslim.tab". (file is saved locally on my computer)
+```{r}
+blastquery_goslim <- read.table("../analyses/BLAST-to-GOslim/Blastquery-GOslim.tab", sep = '\t')
+head(blastquery_goslim)
+```
+1395724 rows, 4 cols
+
+#### add column names
+```{r}
+colnames(blastquery_goslim) <- c("Trinity_ID", "GO_ID", "GOslim", "biological_process")
+head(blastquery_goslim)
+```
+
+#### Call out the GOslim terms that have the word "stress" in them: 
+```{r}
+stress <- blastquery_goslim %>%
+  filter(str_detect(GOslim, "stress"))
+head(stress)
+```
+35478 rows, as expected
+
+### `join` the stress list with the annotated blast output (blastout_uniprot)
+```{r}
+stress_annot <- left_join(stress, blastout_uniprot, by = "Trinity_ID")
+head(stress_annot)
+```
+36735 rows, 28 cols. Not all stress stress response have GO terms 
+
+Find out how many of them DO have GO annotation (stat for paper):
+```{r}
+GOstress <- stress_annot %>%
+  filter(str_detect(review_status, "reviewed"))
+head(GOstress)
+```
+15545 rows, 28 rows
+15545 of the 36735 stress response genes have associated GO annotation
+
+### write out transcriptome stress genes to paper-crab/analyses
+```{r}
+write.table(stress_annot, "../analyses/stress-response-genes.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
