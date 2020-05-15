@@ -1,0 +1,52 @@
+---
+title: "transcriptome-fullblast-goslim-table"
+output: html_document
+---
+Rmd to `join` 'Blastquery-GOslim.tab' with '_blast-sep.tab' to get a file that is the full transcriptome `blast`output with GOslim terms. 
+
+```{r}
+library(tidyverse)
+```
+
+### Read in the files
+uniprot-SP-GO.tab:
+```{r}
+uniprot_SP_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_SP_GO)
+```
+Rename columns:
+```{r}
+colnames(uniprot_SP_GO) <- c("uniprot_acc_ID", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12")
+head(uniprot_SP_GO)
+```
+
+_blast-sep.tab:
+```{r}
+blast_sep <- read.delim("../analyses/BLAST-to-GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+head(blast_sep)
+```
+
+Rename first and third column: 
+```{r}
+colnames(blast_sep) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blast_sep)
+```
+
+### `join` two files based on "uniprot_acc_ID" column:
+```{r}
+blast_go <- left_join(blast_sep, uniprot_SP_GO, by = "uniprot_acc_ID")
+head(blast_go)
+```
+
+Same rows as original `blast` output (147454)
+
+write out to analyses:
+```{r}
+write.table(blast_go, "../analyses/transcriptome-blast-GO.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
+
+
+
+
+
