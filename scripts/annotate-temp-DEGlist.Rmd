@@ -70,5 +70,4 @@ Write out annotated DEG list comparing elevated and decreased to paper-crab/anal
 write.table(degs_annot, "../analyses/pool_temp-annot_DEGlist.tab", quote = FALSE, row.names = FALSE, sep = '\t')
 ```
 
-
-
+339 were annotated with GO... some may be replicate Trinity_IDs though... 
