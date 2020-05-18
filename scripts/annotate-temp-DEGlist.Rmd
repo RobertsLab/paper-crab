@@ -1,0 +1,28 @@
+---
+title: "annotate-temp-DEGlist"
+output: html_document
+---
+Rmd to annotate the list of 424 DEGs. DEG list found comparing elevated (10˚C) and decreased (4˚C) RNAseq data - libraries 8+10 compared to libraries 9+11. 
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+Read 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
