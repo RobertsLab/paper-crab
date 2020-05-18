@@ -67,7 +67,7 @@ STILL NEED TO FIGURE OUT HOW TO GET RID OF THE DUPLICATE ROWS!!!
 
 Write out annotated DEG list comparing elevated and decreased to paper-crab/analsyes:
 ```{r}
-write.table(degs_annot, "../analyses/pool_temperature-DEGlist.tab", quote = FALSE, row.names = FALSE, sep = '\t')
+write.table(degs_annot, "../analyses/pool_temp-annot_DEGlist.tab", quote = FALSE, row.names = FALSE, sep = '\t')
 ```
 
 
