@@ -3,8 +3,14 @@ title: "Gene expression heatmaps"
 output: html_document
 ---
 Rmd to create heatmaps of differentially expressed gene lists. Two DEG lists (with gene counts):   
-1. Infection DEG list: https://raw.githubusercontent.com/RobertsLab/project-crab/master/analyses/2019-infection-degs_genecounts.csv 
-2. 
+1. Temperature DEG and gene count list:
+https://raw.githubusercontent.com/RobertsLab/paper-crab/master/analyses/temp_DEGlist-counts.tab 
+2. Infection DEG and gene count list: https://raw.githubusercontent.com/RobertsLab/project-crab/master/analyses/2019-infection-degs_genecounts.csv 
+
+# Notes:
+1. Count data probably needs to be transformed in some way. I think the infection status DEG list count data is already transformed somehow...? 
+2. Need to decide which genes to use in maps. I just picked some somewhat random Trinity_IDs for the maps below to practice. 
+
 
 ## Install packages:
 (uncomment "install.packages("pheatmap")" if you need to install it)
