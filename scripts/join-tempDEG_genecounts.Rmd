@@ -1,0 +1,45 @@
+---
+title: "Temp DEG list with gene counts"
+output: html_document
+---
+Rmd to `join` gene count data with temperature DEG list. 
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+# Read in the temperature DEG list: 
+
+
+### Temperature DEG annotated list
+```{r}
+temp_deg_annot <- read.delim("../analyses/DEG-temperature.txt")
+head(temp_deg_annot)
+```
+
+# Read in table of gene counts (from Rmd: 02-DeSeq-Temperature.Rmd: 
+```{r}
+counts <- read.delim("../data/kallisto-0517.isoform.counts.txt", header = T, sep = "\t")
+head(counts)
+```
+
+Rename "FeatureID" --> "Trinity_ID"
+```{r}
+colnames(counts) <- c("Trinity_ID", "380822_cold", "380823_cold", "380824_warm", "380825_warm")
+head(counts)
+```
+
+# `join` the two files based on column "Trinity_ID"
+```{r}
+temp_deg_counts <- left_join(temp_deg_annot, counts, by = "Trinity_ID")
+head(temp_deg_counts)
+```
+
+Same number of rows (423) as the original DEG list. 
+
+# Write out the temperature comparison DEG list with gene counts for each sample: 
+```{r}
+write.table(temp_deg_counts, "../analyses/temp_DEGlist-counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
