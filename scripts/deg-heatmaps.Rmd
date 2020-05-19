@@ -38,13 +38,13 @@ heatmapRedYelBlu <- RColorBrewer::brewer.pal(11, "RdYlBu")
 
 ### Read in temperature DEG list with gene counts table (423 rows)
 ```{r}
-temp_counts <- read.delim("../analyses/temp_DEGlist-counts.tab", sep = '\t')
+temp_counts <- read.delim("../analyses/temp_DEGlist-counts-log.txt", sep = '\t')
 head(temp_counts)
 ```
 
-Subset just the Trinity_ID column and the gene count sample columns:
+Subset just the Trinity_ID column and the gene count sample columns (log +1 transformed):
 ```{r}
-matrix_temp <- select(temp_counts, Trinity_ID, X380822_cold, X380823_cold, X380824_warm, X380825_warm)
+matrix_temp <- select(temp_counts, Trinity_ID, X380822_cold_log, X380823_cold_log, X380824_warm_log, X380825_warm_log)
 head(matrix_temp)
 ```
 
@@ -57,14 +57,14 @@ head(matrix_temp.heatmap)
 
 Subset genes of interest (for practice, just picking random ones)
 ```{r}
-include_list <- c("TRINITY_DN169_c0_g1_i11", "TRINITY_DN983_c0_g1_i3", "TRINITY_DN25158_c34_g1_i1", "TRINITY_DN5806_c0_g1_i1")
-matrix_temp.heatmap.sub <- matrix_temp.heatmap[include_list, ]
-matrix_temp.heatmap.sub
+#include_list <- c("TRINITY_DN169_c0_g1_i11", "TRINITY_DN983_c0_g1_i3", "TRINITY_DN25158_c34_g1_i1", "TRINITY_DN5806_c0_g1_i1")
+#matrix_temp.heatmap.sub <- matrix_temp.heatmap[include_list, ]
+#matrix_temp.heatmap.sub
 ```
 
 Create heatmap for temperature subset DEG list:
 ```{r}
-pheatmap(matrix_temp.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedYelBlu, fontsize_col = 20, fontsize_row = 12)
+pheatmap(matrix_temp.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = FALSE, treeheight_col = 80, legend = TRUE, color = heatmapRedYelBlu, fontsize_col = 20, fontsize_row = 12)
 ```
 
 
@@ -96,14 +96,14 @@ head(matrix_infect.heatmap)
 
 Subset genes of interest (for practice, just picking random ones)
 ```{r}
-include_list <- c("TRINITY_DN1003_c0_g1_i4", "TRINITY_DN7071_c0_g1_i1", "TRINITY_DN1796_c0_g1_i1", "TRINITY_DN1796_c0_g1_i1")
-matrix_infect.heatmap.sub <- matrix_infect.heatmap[include_list, ]
-matrix_infect.heatmap.sub
+#include_list <- c("TRINITY_DN1003_c0_g1_i4", "TRINITY_DN7071_c0_g1_i1", "TRINITY_DN1796_c0_g1_i1", "TRINITY_DN1796_c0_g1_i1")
+#matrix_infect.heatmap.sub <- matrix_infect.heatmap[include_list, ]
+#matrix_infect.heatmap.sub
 ```
 
 Create heatmap for temperature subset DEG list:
 ```{r}
-pheatmap(matrix_infect.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPiYG, fontsize_col = 20, fontsize_row = 12)
+pheatmap(matrix_infect.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPiYG, fontsize_col = 20, fontsize_row = 12)
 ```
 
 
