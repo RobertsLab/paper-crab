@@ -108,5 +108,23 @@ pheatmap(matrix_infect.heatmap, cluster_row = TRUE, cluster_cols = FALSE, cluste
 # HEAT MAPS FOR INDIVIDUAL CRAB RNASEQ DATA
 Just making a ton to see if anything is interesting 
 
+# upload individual RNAseq gene count data (2020 Genewiz samples):
+```{r}
+master_individual_counts <- read.delim("../analyses/individual-RNAseq-genecounts_log.txt", sep = '\t')
+head(master_individual_counts)
+```
+
+Pull out column "X" (Trinity IDs) and all individual samples that have _log in column name: 
+```{r}
+matrix_individ_log <- select(master_individual_counts, X, X294_quant_log, X254_quant_log, X280_quant_log, X485_quant_log, X481_quant_log, X173_quant_log, X222_quant_log, X151_quant_log, X272_quant_log, X132_quant_log, X127_quant_log, X73_quant_log, X427_quant_log, X118_quant_log, X334_quant_log, X349_quant_log, X425_quant_log, X178_quant_log, X72_quant_log, X463_quant_log, X221_quant_log, X445_quant_log, X359_quant_log, X113_quant_log)
+head(matrix_individ_log)
+```
+
+Rename columns based on crab ID along with sample day (example: A_0, A_2, A_17)
+
+
+
+
+
 
 
