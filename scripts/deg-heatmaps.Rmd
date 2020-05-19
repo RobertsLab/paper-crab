@@ -44,14 +44,64 @@ head(matrix_temp)
 
 Set Trinity_ID as row names:
 ```{r}
-rownames(matrix_temp) <- matrix_temp$Trinity_ID
-temp_heatmap <- matrix_temp[,1] #remove redundant column
-head(temp_heatmap)
+rownames(matrix_temp) <- matrix_temp$Trinity_ID #set Trinity_ID as rownames
+matrix_temp.heatmap <- matrix_temp[,-1] #remove redundant column
+head(matrix_temp.heatmap)
 ```
 
-Create heatmap for temperature DEG list:
+Subset genes of interest (for practice, just picking random ones)
 ```{r}
-pheatmap(temp_heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedYelBlu, fontsize_col = 20, fontsize_row = 12)
+include_list <- c("TRINITY_DN169_c0_g1_i11", "TRINITY_DN983_c0_g1_i3", "TRINITY_DN25158_c34_g1_i1", "TRINITY_DN5806_c0_g1_i1")
+matrix_temp.heatmap.sub <- matrix_temp.heatmap[include_list, ]
+matrix_temp.heatmap.sub
 ```
+
+Create heatmap for temperature subset DEG list:
+```{r}
+pheatmap(matrix_temp.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedYelBlu, fontsize_col = 20, fontsize_row = 12)
+```
+
+
+# Infection comparison heatmap 
+
+Heatmap color palette: 
+```{r}
+heatmapPiYG <- RColorBrewer::brewer.pal(11, "PiYG")
+```
+
+### Read in infection status DEG list with gene counts table (772 rows)
+```{r}
+infect_counts <- read.delim("../../project-crab/analyses/2019-infection-degs_genecounts.csv", sep = ',')
+head(infect_counts)
+```
+
+Subset just the Trinity_ID column and the gene count sample columns:
+```{r}
+matrix_infect <- select(infect_counts, Trinity_ID, infected_12, uninfected_12, infected_26, uninfected_26)
+head(matrix_infect)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(matrix_infect) <- matrix_infect$Trinity_ID #set Trinity_ID as rownames
+matrix_infect.heatmap <- matrix_infect[,-1] #remove redundant column
+head(matrix_infect.heatmap)
+```
+
+Subset genes of interest (for practice, just picking random ones)
+```{r}
+include_list <- c("TRINITY_DN1003_c0_g1_i4", "TRINITY_DN7071_c0_g1_i1", "TRINITY_DN1796_c0_g1_i1", "TRINITY_DN1796_c0_g1_i1")
+matrix_infect.heatmap.sub <- matrix_infect.heatmap[include_list, ]
+matrix_infect.heatmap.sub
+```
+
+Create heatmap for temperature subset DEG list:
+```{r}
+pheatmap(matrix_infect.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPiYG, fontsize_col = 20, fontsize_row = 12)
+```
+
+
+
+
 
 
