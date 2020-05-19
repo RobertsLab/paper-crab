@@ -1,0 +1,57 @@
+---
+title: "Gene expression heatmaps"
+output: html_document
+---
+Rmd to create heatmaps of differentially expressed gene lists. Two DEG lists (with gene counts):   
+1. Infection DEG list: https://raw.githubusercontent.com/RobertsLab/project-crab/master/analyses/2019-infection-degs_genecounts.csv 
+2. 
+
+## Install packages:
+(uncomment "install.packages("pheatmap")" if you need to install it)
+```{r}
+#install.packages("pheatmap")
+library(pheatmap)
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+#install.packages("RColorBrewer")
+library(RColorBrewer)
+```
+
+# Temperature comparison (elevated vs decreased) heatmap
+
+Create color scheme and save as object:
+(11 --> number of colors in color palette)
+```{r}
+heatmapRedYelBlu <- RColorBrewer::brewer.pal(11, "RdYlBu")
+```
+
+### Read in temperature DEG list with gene counts table (423 rows)
+```{r}
+temp_counts <- read.delim("../analyses/temp_DEGlist-counts.tab", sep = '\t')
+head(temp_counts)
+```
+
+Subset just the Trinity_ID column and the gene count sample columns:
+```{r}
+matrix_temp <- select(temp_counts, Trinity_ID, X380822_cold, X380823_cold, X380824_warm, X380825_warm)
+head(matrix_temp)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(matrix_temp) <- matrix_temp$Trinity_ID
+temp_heatmap <- matrix_temp[,1] #remove redundant column
+head(temp_heatmap)
+```
+
+Create heatmap for temperature DEG list:
+```{r}
+pheatmap(temp_heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedYelBlu, fontsize_col = 20, fontsize_row = 12)
+```
+
+
