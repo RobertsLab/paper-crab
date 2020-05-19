@@ -106,8 +106,6 @@ Create heatmap for temperature subset DEG list:
 pheatmap(matrix_infect.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPiYG, fontsize_col = 20, fontsize_row = 12)
 ```
 
-# Notes:
-Count data probably needs to be transformed in some way. I think the infection status DEG list count data is already transformed somehow...? 
 
 
 
