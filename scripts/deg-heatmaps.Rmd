@@ -108,7 +108,7 @@ pheatmap(matrix_infect.heatmap, cluster_row = TRUE, cluster_cols = FALSE, cluste
 # HEAT MAPS FOR INDIVIDUAL CRAB RNASEQ DATA
 Just making a ton to see if anything is interesting 
 
-# upload individual RNAseq gene count data (2020 Genewiz samples):
+upload individual RNAseq gene count data (2020 Genewiz samples):
 ```{r}
 master_individual_counts <- read.delim("../analyses/individual-RNAseq-genecounts_log.txt", sep = '\t')
 head(master_individual_counts)
@@ -121,6 +121,43 @@ head(matrix_individ_log)
 ```
 
 Rename columns based on crab ID along with sample day (example: A_0, A_2, A_17)
+Tab 3 in this google doc give GeneWiz IDs for the individual crabs (A-I)
+https://docs.google.com/spreadsheets/d/1d17yg5F5gKKC66O8QkTIlPxljJeuX7ZsG46pkBr1lNQ/edit#gid=848044428 
+
+```{r}
+colnames(matrix_individ_log) <- c("X", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(matrix_individ_log)
+```
+
+## Heatmap for crabs A, B, and C over time
+CrabA 0, 2, 17
+CrabB 0, 2, 17
+CrabC 0, 2, 17
+
+Subset the Trinity IDs and the counts for those samples:
+```{r}
+ABC <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabB_2, CrabB_17)
+head(ABC)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(ABC) <- ABC$X #set Trinity IDs as rownames
+ABC.heatmap <- ABC[,-1] #remove redundant column
+head(ABC.heatmap)
+```
+
+Create heatmap colors:
+```{r}
+heatmapPRGn <- RColorBrewer::brewer.pal(11, "PRGn")
+```
+
+Create heatmap for temperature subset DEG list:
+```{r}
+pheatmap(ABC.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPRGn, fontsize_col = 20, fontsize_row = 12)
+```
+
+
 
 
 
