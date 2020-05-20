@@ -61,5 +61,11 @@ counts_annot
 ```
 
 Huh... no annotation... 
+Individual count matrix does not have isoforms in the Trinity IDs, whereas the transcriptome `blast` output does... so they aren't able to be `join`-ed ... 
+
+
+
+
+
 
 
