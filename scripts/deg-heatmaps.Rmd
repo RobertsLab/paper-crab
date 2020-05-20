@@ -9,6 +9,11 @@ https://raw.githubusercontent.com/RobertsLab/paper-crab/master/analyses/temp_DEG
 
 ALSO --> after those two heatmaps, I'm making a TON of heatmaps from the 2020 Genewiz individual RNA seq data. 
 
+### Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Install packages:
 (uncomment "install.packages("pheatmap")" if you need to install it)
