@@ -136,7 +136,7 @@ CrabC 0, 2, 17
 
 Subset the Trinity IDs and the counts for those samples:
 ```{r}
-ABC <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabB_2, CrabB_17)
+ABC <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17)
 head(ABC)
 ```
 
@@ -155,9 +155,20 @@ heatmapPRGn <- RColorBrewer::brewer.pal(11, "PRGn")
 Create heatmap for temperature subset DEG list:
 24,727 rows ---> TOO MANY FOR ONE HEATMAP
 
-#pheatmap(ABC.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPRGn, fontsize_col = 20, fontsize_row = 12)
+Subset some random genes (can pick some cool ones later): 
+```{r}
+include_list <- c("TRINITY_DN0_c4_g1", "TRINITY_DN3868_c0_g1", "TRINITY_DN28066_c26_g1","TRINITY_DN1362_c0_g1")
+ABC.heatmap.sub <- ABC.heatmap[include_list, ]
+ABC.heatmap.sub
+```
+
+```{r}
+pheatmap(ABC.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPRGn, fontsize_col = 20, fontsize_row = 12)
+``` 
 
 
+
+I will annotate this list first and then re-do and just map those that have annotations. 
 
 
 
