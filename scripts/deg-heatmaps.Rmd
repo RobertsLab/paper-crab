@@ -168,8 +168,6 @@ pheatmap(ABC.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_d
 
 
 
-I will annotate this list first and then re-do and just map those that have annotations. 
-
 
 
 
