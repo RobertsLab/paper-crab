@@ -1,0 +1,70 @@
+---
+title: "Annotate individual crab gene count data with GO and BLAST output"
+output: html_document
+---
+Rmd to annotate the list of individual crab RNAseq counts with uniprot-SP-GO.sorted and transcriptome v. 1.5 `blast` output: 
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+Read in 2020 Genewiz gene counts matrix: 
+```{r}
+indiv_counts <- read.delim("../analyses/individual-RNAseq-genecounts_log.txt", sep = '\t')
+head(indiv_counts)
+```
+
+Add column names:
+```{r}
+indiv_counts <- select(indiv_counts, X, X294_quant_log, X254_quant_log, X280_quant_log, X485_quant_log, X481_quant_log, X173_quant_log, X222_quant_log, X151_quant_log, X272_quant_log, X132_quant_log, X127_quant_log, X73_quant_log, X427_quant_log, X118_quant_log, X334_quant_log, X349_quant_log, X425_quant_log, X178_quant_log, X72_quant_log, X463_quant_log, X221_quant_log, X445_quant_log, X359_quant_log, X113_quant_log)
+head(indiv_counts)
+```
+Rename columns: 
+```{r}
+colnames(indiv_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(indiv_counts)
+```
+
+
+Read in the uniprot-SP-GO.sorted file:
+```{r}
+uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_sp_GO)
+```
+
+Rename some columns: 
+```{r}
+colnames(uniprot_sp_GO) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_sp_GO)
+```
+
+Upload crab transcriptome BLAST output (from transcriptome v. 1.5)
+```{r}
+blastout <- read.delim("../../project-crab/analyses/BLAST_to_GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+head(blastout)
+```
+
+
+Rename one column so that this file can be `join`-ed with the uniprot-SP-Go:
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+
+`join` blastout and uniprot_sp_GO by "uniprot_acc_ID" column:
+```{r}
+blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
+head(blastout_uniprot)
+```
+Same rows as the `blast` output... good to go
+
+`join` the annotated blast output file with individual crab count data by Trinity_ID:
+```{r}
+counts_annot <- left_join(indiv_counts, blastout_uniprot, by = "Trinity_ID")
+head(counts_annot)
+```
+
+Huh... no annotation... 
+
+
