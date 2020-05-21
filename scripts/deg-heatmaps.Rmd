@@ -173,9 +173,9 @@ TRINITY_DN745_c3_g1_i2 proPO-A3 (defense response to fungus)
 
 TRINITY_DN4425_c0_g1_i1	HSP 90-beta  
 
-
+TRINITY_DN745_c3_g2_i2 proPO-A3 - defense response to fungus, bacteria, etc.; melanotic encapsulation of foreign target
 ```{r}
-include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1")
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2")
 ABC.heatmap.sub <- ABC.heatmap[include_list, ]
 ABC.heatmap.sub
 ```
