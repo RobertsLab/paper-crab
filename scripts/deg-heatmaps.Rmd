@@ -375,6 +375,9 @@ head(DEinfected.heatmap)
 ```{r}
 pheatmap(DEinfected.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
+Crab D --> uninfected decreased
+Crab E --> infected decreased
+
 
 # Heat map of all individual crabs gene counts
 
@@ -395,4 +398,9 @@ MAKING A HEAT MAP WITH THAT MANY GENES resulted in R and my laptop shutting down
 ```{r}
 #pheatmap(ALLcrabs.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
+
+
+
+
+
 
