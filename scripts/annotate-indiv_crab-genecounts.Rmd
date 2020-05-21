@@ -9,16 +9,16 @@ library(tidyverse)
 library(dplyr)
 ```
 
-Read in 2020 Genewiz gene counts matrix: 
+Read in 2020 Genewiz gene counts matrix (with log+1 counts as well): 
 ```{r}
-indiv_counts <- read.delim("../analyses/individual-RNAseq-genecounts_log.txt", sep = '\t')
+indiv_counts <- read.delim("../analyses/individual_crab-isoform-log-matrix.txt", sep = '\t')
 head(indiv_counts)
 ```
 
-Rename columns: 
+Rename columns: (only necessary if want to use the https://github.com/RobertsLab/paper-crab/blob/master/data/individual_crab-salmon.isoform.counts.matrix)
 ```{r}
-colnames(indiv_counts) <- c("Trinity_ID", "X294_quant", "X254_quant", "X280_quant", "X485_quant", "X481_quant", "X173_quant", "X222_quant", "X151_quant", "X272_quant", "X132_quant", "X127_quant", "X73_quant", "X427_quant", "X118_quant", "X334_quant", "X349_quant", "X425_quant", "X178_quant", "X72_quant", "X463_quant", "X221_quant", "X445_quant", "X359_quant", "X113_quant", "X294_quant_log", "X254_quant_log", "X280_quant_log", "X485_quant_log", "X481_quant_log", "X173_quant_log", "X222_quant_log", "X151_quant_log", "X272_quant_log", "X132_quant_log", "X127_quant_log", "X73_quant_log", "X427_quant_log", "X118_quant_log", "X334_quant_log", "X349_quant_log", "X425_quant_log", "X178_quant_log", "X72_quant_log", "X463_quant_log", "X221_quant_log", "X445_quant_log", "X359_quant_log", "X113_quant_log")
-head(indiv_counts)
+#colnames(indiv_counts) <- c("Trinity_ID", "X294_quant", "X254_quant", "X280_quant", "X485_quant", "X481_quant", "X173_quant", "X222_quant", "X151_quant", "X272_quant", "X132_quant", "X127_quant", "X73_quant", "X427_quant", "X118_quant", "X334_quant", "X349_quant", "X425_quant", "X178_quant", "X72_quant", "X463_quant", "X221_quant", "X445_quant", "X359_quant", "X113_quant")
+# head(indiv_counts)
 ```
 
 
@@ -60,8 +60,10 @@ counts_annot <- left_join(indiv_counts, blastout_uniprot, by = "Trinity_ID")
 counts_annot
 ```
 
-Huh... no annotation... 
-Individual count matrix does not have isoforms in the Trinity IDs, whereas the transcriptome `blast` output does... so they aren't able to be `join`-ed ... 
+Write out the table to paper-crab/analyses for use in making heatmaps: 
+```{r}
+write.table(counts_annot, "../analyses/individual-crab-counts-annot.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+```
 
 
 
