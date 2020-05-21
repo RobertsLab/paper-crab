@@ -173,7 +173,7 @@ TRINITY_DN745_c3_g1_i2 proPO-A3 (defense response to fungus, response to bacteri
 
 TRINITY_DN1520_c0_g1_i1 HSP 90-beta (response to stress and lots of other stuff)
 
-TRINITY_DN3772_c0_g1_i1 Heat shock protein 75 kDa, mitochondrial (HSP 75) (TNFR-associated protein 1) 
+TRINITY_DN3772_c0_g1_i1 Heat shock protein 75 kDa, mitochondrial (HSP 75) (TNFR-associated protein 1) response to stress [GO:0006950]; extracellular exosome [GO:0070062]; negative regulation of cellular respiration [GO:1901856]; negative regulation of intrinsic apoptotic signaling pathway in response to hydrogen peroxide [GO:1903751]; response to stress [GO:0006950]; 
 ```{r}
 include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN1520_c0_g1_i1", "TRINITY_DN3772_c0_g1_i1")
 ABC.heatmap.sub <- ABC.heatmap[include_list, ]
