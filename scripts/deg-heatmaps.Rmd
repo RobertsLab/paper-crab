@@ -113,15 +113,15 @@ pheatmap(matrix_infect.heatmap, cluster_row = TRUE, cluster_cols = FALSE, cluste
 # HEAT MAPS FOR INDIVIDUAL CRAB RNASEQ DATA
 Just making a ton to see if anything is interesting 
 
-upload individual RNAseq gene count data (2020 Genewiz samples):
+upload individual RNAseq gene count data (2020 Genewiz samples): with log+1 transformation
 ```{r}
-master_individual_counts <- read.delim("../analyses/individual-RNAseq-genecounts_log.txt", sep = '\t')
+master_individual_counts <- read.delim("../analyses/individual-crab-counts-annot.tab", sep = '\t')
 head(master_individual_counts)
 ```
 
-Pull out column "X" (Trinity IDs) and all individual samples that have _log in column name: 
+Pull out column Trinity IDs and all individual samples that have _log in column name: 
 ```{r}
-matrix_individ_log <- select(master_individual_counts, X, X294_quant_log, X254_quant_log, X280_quant_log, X485_quant_log, X481_quant_log, X173_quant_log, X222_quant_log, X151_quant_log, X272_quant_log, X132_quant_log, X127_quant_log, X73_quant_log, X427_quant_log, X118_quant_log, X334_quant_log, X349_quant_log, X425_quant_log, X178_quant_log, X72_quant_log, X463_quant_log, X221_quant_log, X445_quant_log, X359_quant_log, X113_quant_log)
+matrix_individ_log <- select(master_individual_counts, Trinity_ID, X294_quant_log, X254_quant_log, X280_quant_log, X485_quant_log, X481_quant_log, X173_quant_log, X222_quant_log, X151_quant_log, X272_quant_log, X132_quant_log, X127_quant_log, X73_quant_log, X427_quant_log, X118_quant_log, X334_quant_log, X349_quant_log, X425_quant_log, X178_quant_log, X72_quant_log, X463_quant_log, X221_quant_log, X445_quant_log, X359_quant_log, X113_quant_log)
 head(matrix_individ_log)
 ```
 
@@ -130,7 +130,7 @@ Tab 3 in this google doc give GeneWiz IDs for the individual crabs (A-I)
 https://docs.google.com/spreadsheets/d/1d17yg5F5gKKC66O8QkTIlPxljJeuX7ZsG46pkBr1lNQ/edit#gid=848044428 
 
 ```{r}
-colnames(matrix_individ_log) <- c("X", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+colnames(matrix_individ_log) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
 head(matrix_individ_log)
 ```
 
@@ -141,7 +141,7 @@ CrabC 0, 2, 17
 
 Subset the Trinity IDs and the counts for those samples:
 ```{r}
-ABC <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17)
+ABC <- select(matrix_individ_log, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17)
 head(ABC)
 ```
 
@@ -162,7 +162,7 @@ Create heatmap for temperature subset DEG list:
 
 Subset some random genes (can pick some cool ones later): 
 ```{r}
-include_list <- c("TRINITY_DN0_c4_g1", "TRINITY_DN3868_c0_g1", "TRINITY_DN28066_c26_g1","TRINITY_DN1362_c0_g1")
+include_list <- c("TRINITY_DN28611_c0_g1_i1", "", "","")
 ABC.heatmap.sub <- ABC.heatmap[include_list, ]
 ABC.heatmap.sub
 ```
