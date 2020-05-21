@@ -376,3 +376,23 @@ head(DEinfected.heatmap)
 pheatmap(DEinfected.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
 
+# Heat map of all individual crabs gene counts
+
+```{r}
+ALLcrabs <- select(matrix_individ_log, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabF_0, CrabF_2, CrabF_17, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(ALLcrabs)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(ALLcrabs) <- ALLcrabs$Trinity_ID #set Trinity IDs as rownames
+ALLcrabs.heatmap <- ALLcrabs[,-1] #remove redundant column
+head(ALLcrabs.heatmap)
+```
+
+MAKING A HEAT MAP WITH THAT MANY GENES resulted in R and my laptop shutting down 
+
+```{r}
+#pheatmap(ALLcrabs.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
+
