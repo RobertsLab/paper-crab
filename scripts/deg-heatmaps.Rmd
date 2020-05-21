@@ -324,9 +324,55 @@ pheatmap(ABCGHI.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_di
 ```
 DEG temperature list that matched with the individual crab gene counts
 
+# Heat maps with infection comparison DEG list and individual crabs
+
+`join` infect_counts with matrix_individ_log
+```{r}
+infdegs_individual <- left_join(matrix_individ_log, infect_counts, by = "Trinity_ID")
+head(infdegs_individual)
+```
+
+Just want the ones that matched..
+
+```{r}
+infected_individual_degs <- filter(infdegs_individual, baseMean != "NA")
+head(infected_individual_degs)
+```
+
+```{r}
+ABCGHI_infected <- select(infected_individual_degs, Trinity_ID, CrabA_0, CrabA_2, CrabB_0, CrabB_2, CrabC_0, CrabC_2, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(ABCGHI_infected)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(ABCGHI_infected) <- ABCGHI_infected$Trinity_ID #set Trinity IDs as rownames
+ABCGHIinfected.heatmap <- ABCGHI_infected[,-1] #remove redundant column
+head(ABCGHIinfected.heatmap)
+```
+
+```{r}
+pheatmap(ABCGHIinfected.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
+
+# Heat map of infected DEGs with crabs D and E across time points 
+D --> uinfected decreased
+E --> infected decreased
+
+```{r}
+DE_infected <- select(infected_individual_degs, Trinity_ID, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17)
+head(DE_infected)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(DE_infected) <- DE_infected$Trinity_ID #set Trinity IDs as rownames
+DEinfected.heatmap <- DE_infected[,-1] #remove redundant column
+head(DEinfected.heatmap)
+```
 
 
-
-
-
+```{r}
+pheatmap(DEinfected.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
 
