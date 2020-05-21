@@ -166,7 +166,7 @@ annotated <- read.delim("../analyses/individual-crab-counts-annot.tab", sep = '\
 head(annotated)
 ```
 
-Subset some random genes (can pick some cool ones later): 
+Subset some genes (cross-references with stress response gene list): 
 TRINITY_DN3510_c0_g1_i1 	DnaJ homolog subfamily B member 4 (protein folding [GO:0006457]; response to heat)
 
 TRINITY_DN745_c3_g1_i2 proPO-A3 (defense response to fungus)
@@ -256,8 +256,41 @@ pheatmap(GHI.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_d
 ```
 
 # Heatmap for crabs A, E, and G across 2 time points 
+Crab A - infected ambient
+Crab E - infected decreased
+Crab G - infected elevated
 
-# Heatmap for crabs A, E, and G at Day 2
+```{r}
+AEG <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabE_0, CrabE_2, CrabG_0, CrabG_2)
+head(AEG)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(AEG) <- AEG$X #set Trinity IDs as rownames
+AEG.heatmap <- AEG[,-1] #remove redundant column
+head(AEG.heatmap)
+```
+
+Create heatmap colors:
+```{r}
+heatmapRdGy <- RColorBrewer::brewer.pal(11, "RdGy")
+```
+
+
+```{r}
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+AEG.heatmap.sub <- AEG.heatmap[include_list, ]
+AEG.heatmap.sub
+```
+
+```{r}
+pheatmap(AEG.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdGy, fontsize_col = 20, fontsize_row = 12)
+```
+
+# Heat map for 
+
+
 
 
 
