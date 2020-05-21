@@ -134,10 +134,10 @@ colnames(matrix_individ_log) <- c("X", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_1
 head(matrix_individ_log)
 ```
 
-## Heatmap for crabs A, B, and C over time
-CrabA 0, 2, 17
-CrabB 0, 2, 17
-CrabC 0, 2, 17
+# Heatmap for crabs A, B, and C over time
+CrabA 0, 2, 17 (infected ambient)
+CrabB 0, 2, 17 (infected ambient)
+CrabC 0, 2, 17 (infected ambient)
 
 Subset the Trinity IDs and the counts for those samples:
 ```{r}
@@ -174,8 +174,10 @@ TRINITY_DN745_c3_g1_i2 proPO-A3 (defense response to fungus)
 TRINITY_DN4425_c0_g1_i1	HSP 90-beta  
 
 TRINITY_DN745_c3_g2_i2 proPO-A3 - defense response to fungus, bacteria, etc.; melanotic encapsulation of foreign target
+
+TRINITY_DN3772_c0_g1_i1 Heat shock protein 75 kDa, mitochondrial (HSP 75) (TNFR-associated protein 1) 
 ```{r}
-include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2")
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
 ABC.heatmap.sub <- ABC.heatmap[include_list, ]
 ABC.heatmap.sub
 ```
@@ -185,7 +187,77 @@ pheatmap(ABC.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_d
 ``` 
 
 
+# HEAT MAPS FOR COMPARING CRAB D AND E
+Comparing D and E over time
+Crab D --> uninfected, decreased temp
+Crab E --> infected, decreased temp
 
+
+```{r}
+DE <- select(matrix_individ_log, X, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabE_0, CrabE_2, CrabE_17)
+head(DE)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(DE) <- DE$X #set Trinity IDs as rownames
+DE.heatmap <- DE[,-1] #remove redundant column
+head(DE.heatmap)
+```
+
+Create heatmap colors:
+```{r}
+heatmapRdBu <- RColorBrewer::brewer.pal(11, "RdBu")
+```
+
+
+```{r}
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+DE.heatmap.sub <- DE.heatmap[include_list, ]
+DE.heatmap.sub
+```
+
+```{r}
+pheatmap(DE.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdBu, fontsize_col = 20, fontsize_row = 12)
+``` 
+
+# Heatmap for crabs G, H, and I across time
+Crab G - infected elevated
+Crab H - infected elevated
+Crab I - infected elevated 
+
+```{r}
+GHI <- select(matrix_individ_log, X, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(GHI)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(GHI) <- GHI$X #set Trinity IDs as rownames
+GHI.heatmap <- GHI[,-1] #remove redundant column
+head(GHI.heatmap)
+```
+
+
+Create heatmap colors:
+```{r}
+heatmapPuOr <- RColorBrewer::brewer.pal(11, "PuOr")
+```
+
+
+```{r}
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+GHI.heatmap.sub <- GHI.heatmap[include_list, ]
+GHI.heatmap.sub
+```
+
+```{r}
+pheatmap(GHI.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPuOr, fontsize_col = 20, fontsize_row = 12)
+```
+
+# Heatmap for crabs A, E, and G across 2 time points 
+
+# Heatmap for crabs A, E, and G at Day 2
 
 
 
