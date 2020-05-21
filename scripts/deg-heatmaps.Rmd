@@ -141,13 +141,13 @@ CrabC 0, 2, 17 (infected ambient)
 
 Subset the Trinity IDs and the counts for those samples:
 ```{r}
-ABC <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17)
+ABC <- select(matrix_individ_log, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17)
 head(ABC)
 ```
 
 Set Trinity_ID as row names:
 ```{r}
-rownames(ABC) <- ABC$X #set Trinity IDs as rownames
+rownames(ABC) <- ABC$Trinity_ID #set Trinity IDs as rownames
 ABC.heatmap <- ABC[,-1] #remove redundant column
 head(ABC.heatmap)
 ```
@@ -181,7 +181,7 @@ ABC.heatmap.sub
 ```
 
 ```{r}
-pheatmap(ABC.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPRGn, fontsize_col = 20, fontsize_row = 12)
+pheatmap(ABC.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ``` 
 
 
@@ -192,13 +192,13 @@ Crab E --> infected, decreased temp
 
 
 ```{r}
-DE <- select(matrix_individ_log, X, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabE_0, CrabE_2, CrabE_17)
+DE <- select(matrix_individ_log, Trinity_ID, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabE_0, CrabE_2, CrabE_17)
 head(DE)
 ```
 
 Set Trinity_ID as row names:
 ```{r}
-rownames(DE) <- DE$X #set Trinity IDs as rownames
+rownames(DE) <- DE$Trinity_ID #set Trinity IDs as rownames
 DE.heatmap <- DE[,-1] #remove redundant column
 head(DE.heatmap)
 ```
@@ -216,7 +216,7 @@ DE.heatmap.sub
 ```
 
 ```{r}
-pheatmap(DE.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdBu, fontsize_col = 20, fontsize_row = 12)
+pheatmap(DE.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ``` 
 
 # Heatmap for crabs G, H, and I across time
@@ -225,13 +225,13 @@ Crab H - infected elevated
 Crab I - infected elevated 
 
 ```{r}
-GHI <- select(matrix_individ_log, X, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+GHI <- select(matrix_individ_log, Trinity_ID, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
 head(GHI)
 ```
 
 Set Trinity_ID as row names:
 ```{r}
-rownames(GHI) <- GHI$X #set Trinity IDs as rownames
+rownames(GHI) <- GHI$Trinity_ID #set Trinity IDs as rownames
 GHI.heatmap <- GHI[,-1] #remove redundant column
 head(GHI.heatmap)
 ```
@@ -250,7 +250,7 @@ GHI.heatmap.sub
 ```
 
 ```{r}
-pheatmap(GHI.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPuOr, fontsize_col = 20, fontsize_row = 12)
+pheatmap(GHI.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
 
 # Heatmap for crabs A, E, and G across 2 time points 
@@ -259,13 +259,13 @@ Crab E - infected decreased
 Crab G - infected elevated
 
 ```{r}
-AEG <- select(matrix_individ_log, X, CrabA_0, CrabA_2, CrabE_0, CrabE_2, CrabG_0, CrabG_2)
+AEG <- select(matrix_individ_log, Trinity_ID, CrabA_0, CrabA_2, CrabE_0, CrabE_2, CrabG_0, CrabG_2)
 head(AEG)
 ```
 
 Set Trinity_ID as row names:
 ```{r}
-rownames(AEG) <- AEG$X #set Trinity IDs as rownames
+rownames(AEG) <- AEG$Trinity_ID #set Trinity IDs as rownames
 AEG.heatmap <- AEG[,-1] #remove redundant column
 head(AEG.heatmap)
 ```
@@ -283,7 +283,7 @@ AEG.heatmap.sub
 ```
 
 ```{r}
-pheatmap(AEG.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdGy, fontsize_col = 20, fontsize_row = 12)
+pheatmap(AEG.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
 
 # Heat map for temeprature DEG list - with ABC and GHI 
