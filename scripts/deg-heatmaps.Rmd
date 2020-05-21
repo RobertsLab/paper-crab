@@ -130,7 +130,7 @@ Tab 3 in this google doc give GeneWiz IDs for the individual crabs (A-I)
 https://docs.google.com/spreadsheets/d/1d17yg5F5gKKC66O8QkTIlPxljJeuX7ZsG46pkBr1lNQ/edit#gid=848044428 
 
 ```{r}
-colnames(matrix_individ_log) <- c("X", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+colnames(matrix_individ_log) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
 head(matrix_individ_log)
 ```
 
@@ -286,9 +286,43 @@ AEG.heatmap.sub
 pheatmap(AEG.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdGy, fontsize_col = 20, fontsize_row = 12)
 ```
 
-# Heat map for 
+# Heat map for temeprature DEG list - with ABC and GHI 
 
+`join` temperature DEG list with individual crab count matrix
+```{r}
+temp_individual <- left_join(matrix_individ_log, temp_counts, by = "Trinity_ID")
+head(temp_individual)
+```
+Just want the ones that matched..
 
+```{r}
+tempdegs_individual <- filter(temp_individual, baseMean != "NA")
+head(tempdegs_individual)
+```
+
+HEAT MAP FOR CRABS ABC AND GHI WITH TRINITY LIST FROM TEMPERATURE DEGS
+
+```{r}
+ABCGHI <- select(tempdegs_individual, Trinity_ID, CrabA_0, CrabA_2, CrabB_0, CrabB_2, CrabC_0, CrabC_2, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(ABCGHI)
+```
+
+Create heatmap colors:
+```{r}
+heatmapReds <- RColorBrewer::brewer.pal(9, "Reds")
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(ABCGHI) <- ABCGHI$Trinity_ID #set Trinity IDs as rownames
+ABCGHI.heatmap <- ABCGHI[,-1] #remove redundant column
+head(ABCGHI.heatmap)
+```
+
+```{r}
+pheatmap(ABCGHI.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
+DEG temperature list that matched with the individual crab gene counts
 
 
 
