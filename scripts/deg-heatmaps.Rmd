@@ -167,17 +167,15 @@ head(annotated)
 ```
 
 Subset some genes (cross-references with stress response gene list): 
-TRINITY_DN3510_c0_g1_i1 	DnaJ homolog subfamily B member 4 (protein folding [GO:0006457]; response to heat)
+TRINITY_DN3510_c0_g1_i1 	DnaJ homolog subfamily B member 4 (protein folding [GO:0006457]; response to heat [GO:0009408];)
 
-TRINITY_DN745_c3_g1_i2 proPO-A3 (defense response to fungus)
+TRINITY_DN745_c3_g1_i2 proPO-A3 (defense response to fungus, response to bacterium, melanization defense response, etc)
 
-TRINITY_DN4425_c0_g1_i1	HSP 90-beta  
-
-TRINITY_DN745_c3_g2_i2 proPO-A3 - defense response to fungus, bacteria, etc.; melanotic encapsulation of foreign target
+TRINITY_DN1520_c0_g1_i1 HSP 90-beta (response to stress and lots of other stuff)
 
 TRINITY_DN3772_c0_g1_i1 Heat shock protein 75 kDa, mitochondrial (HSP 75) (TNFR-associated protein 1) 
 ```{r}
-include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN1520_c0_g1_i1", "TRINITY_DN3772_c0_g1_i1")
 ABC.heatmap.sub <- ABC.heatmap[include_list, ]
 ABC.heatmap.sub
 ```
@@ -212,7 +210,7 @@ heatmapRdBu <- RColorBrewer::brewer.pal(11, "RdBu")
 
 
 ```{r}
-include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN1520_c0_g1_i1", "TRINITY_DN3772_c0_g1_i1")
 DE.heatmap.sub <- DE.heatmap[include_list, ]
 DE.heatmap.sub
 ```
@@ -246,7 +244,7 @@ heatmapPuOr <- RColorBrewer::brewer.pal(11, "PuOr")
 
 
 ```{r}
-include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN1520_c0_g1_i1", "TRINITY_DN3772_c0_g1_i1")
 GHI.heatmap.sub <- GHI.heatmap[include_list, ]
 GHI.heatmap.sub
 ```
@@ -279,7 +277,7 @@ heatmapRdGy <- RColorBrewer::brewer.pal(11, "RdGy")
 
 
 ```{r}
-include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g1_i2", "TRINITY_DN4425_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN3772_c0_g1_i1")
+include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN1520_c0_g1_i1", "TRINITY_DN3772_c0_g1_i1")
 AEG.heatmap.sub <- AEG.heatmap[include_list, ]
 AEG.heatmap.sub
 ```
