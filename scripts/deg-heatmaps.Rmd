@@ -363,7 +363,8 @@ Crab D --> uninfected decreased
 Crab E --> infected decreased
 
 
-# Heat map of all individual crabs gene counts
+# Heat map of all individual crabs gene counts --> ones that matched with those in the transcriptome v. 1.5 stress response list 
+Can't make a heatmap of ALL 40435 Trinity IDs in the individual crab data
 
 ```{r}
 ALLcrabs <- select(matrix_individ_log, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabF_0, CrabF_2, CrabF_17, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
@@ -407,9 +408,6 @@ stressALLcrabs_distinct.heatmap <- stressALLcrabs_distinct[,-1] #remove redundan
 head(stressALLcrabs_distinct.heatmap)
 ```
 3033 rows
-
-
-MAKING A HEAT MAP WITH THAT MANY GENES resulted in R and my laptop shutting down 
 
 ```{r}
 pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
