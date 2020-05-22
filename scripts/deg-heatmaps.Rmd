@@ -36,7 +36,7 @@ library(RColorBrewer)
 Create color scheme and save as object:
 (11 --> number of colors in color palette)
 ```{r}
-heatmapRedYelBlu <- RColorBrewer::brewer.pal(11, "RdYlBu")
+heatmapGreens <- RColorBrewer::brewer.pal(9, "Greens")
 ```
 
 ### Read in temperature DEG list with gene counts table (423 rows)
@@ -65,9 +65,9 @@ Subset genes of interest (for practice, just picking random ones)
 #matrix_temp.heatmap.sub
 ```
 
-Create heatmap for temperature subset DEG list:
+Create heatmap for temperature DEG list:
 ```{r}
-pheatmap(matrix_temp.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = FALSE, treeheight_col = 80, legend = TRUE, color = heatmapRedYelBlu, fontsize_col = 20, fontsize_row = 12)
+pheatmap(matrix_temp.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = FALSE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
 ```
 
 
@@ -75,7 +75,7 @@ pheatmap(matrix_temp.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clusteri
 
 Heatmap color palette: 
 ```{r}
-heatmapPiYG <- RColorBrewer::brewer.pal(11, "PiYG")
+heatmapOranges <- RColorBrewer::brewer.pal(9, "Oranges")
 ```
 
 ### Read in infection status DEG list with gene counts table (772 rows)
@@ -106,7 +106,7 @@ Subset genes of interest (for practice, just picking random ones)
 
 Create heatmap for temperature subset DEG list:
 ```{r}
-pheatmap(matrix_infect.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPiYG, fontsize_col = 20, fontsize_row = 12)
+pheatmap(matrix_infect.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapOranges, fontsize_col = 20, fontsize_row = 12)
 ```
 
 ------------------------------------------------------------------------
@@ -152,11 +152,6 @@ ABC.heatmap <- ABC[,-1] #remove redundant column
 head(ABC.heatmap)
 ```
 
-Create heatmap colors:
-```{r}
-heatmapPRGn <- RColorBrewer::brewer.pal(11, "PRGn")
-```
-
 Create heatmap for temperature subset DEG list:
 24,727 rows ---> TOO MANY FOR ONE HEATMAP
 
@@ -181,7 +176,7 @@ ABC.heatmap.sub
 ```
 
 ```{r}
-pheatmap(ABC.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+pheatmap(ABC.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapOranges, fontsize_col = 20, fontsize_row = 12)
 ``` 
 
 
@@ -203,10 +198,6 @@ DE.heatmap <- DE[,-1] #remove redundant column
 head(DE.heatmap)
 ```
 
-Create heatmap colors:
-```{r}
-heatmapRdBu <- RColorBrewer::brewer.pal(11, "RdBu")
-```
 
 
 ```{r}
@@ -216,7 +207,7 @@ DE.heatmap.sub
 ```
 
 ```{r}
-pheatmap(DE.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+pheatmap(DE.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
 ``` 
 
 # Heatmap for crabs G, H, and I across time
@@ -236,13 +227,6 @@ GHI.heatmap <- GHI[,-1] #remove redundant column
 head(GHI.heatmap)
 ```
 
-
-Create heatmap colors:
-```{r}
-heatmapPuOr <- RColorBrewer::brewer.pal(11, "PuOr")
-```
-
-
 ```{r}
 include_list <- c("TRINITY_DN3510_c0_g1_i1", "TRINITY_DN745_c3_g2_i2", "TRINITY_DN1520_c0_g1_i1", "TRINITY_DN3772_c0_g1_i1")
 GHI.heatmap.sub <- GHI.heatmap[include_list, ]
@@ -250,7 +234,7 @@ GHI.heatmap.sub
 ```
 
 ```{r}
-pheatmap(GHI.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+pheatmap(GHI.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapOranges, fontsize_col = 20, fontsize_row = 12)
 ```
 
 # Heatmap for crabs A, E, and G across 2 time points 
@@ -272,7 +256,7 @@ head(AEG.heatmap)
 
 Create heatmap colors:
 ```{r}
-heatmapRdGy <- RColorBrewer::brewer.pal(11, "RdGy")
+heatmapBlues <- RColorBrewer::brewer.pal(9, "Blues")
 ```
 
 
@@ -283,7 +267,7 @@ AEG.heatmap.sub
 ```
 
 ```{r}
-pheatmap(AEG.heatmap.sub, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+pheatmap(AEG.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBlues, fontsize_col = 20, fontsize_row = 12)
 ```
 
 # Heat map for temeprature DEG list - with ABC and GHI 
@@ -386,17 +370,49 @@ ALLcrabs <- select(matrix_individ_log, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, C
 head(ALLcrabs)
 ```
 
+Read in the stress response gene list from transcriptome v. 1.5:
+```{r}
+stress <- read.delim("../../project-crab/analyses/crab_stress-response-genes.tab", sep = '\t')
+head(stress)
+```
+
+`join` the stress response gene list with the Trinity IDs from all individual crabs: 
+```{r}
+stress_ALLcrabs <- left_join(ALLcrabs, stress, by = "Trinity_ID")
+head(stress_ALLcrabs)
+```
+
+Subset just the ones that matched: 
+```{r}
+matched_stress_ALLcrabs <- filter(stress_ALLcrabs, GO_ID != "NA")
+head(matched_stress_ALLcrabs)
+```
+
+Subset just the rows that Trinity IDs and the individual crabs: 
+```{r}
+stressALLcrabs <- select(matched_stress_ALLcrabs, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabF_0, CrabF_2, CrabF_17, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(stressALLcrabs)
+```
+
+```{r}
+stressALLcrabs_distinct <- distinct(stressALLcrabs)
+head(stressALLcrabs_distinct)
+```
+
+
 Set Trinity_ID as row names:
 ```{r}
-rownames(ALLcrabs) <- ALLcrabs$Trinity_ID #set Trinity IDs as rownames
-ALLcrabs.heatmap <- ALLcrabs[,-1] #remove redundant column
-head(ALLcrabs.heatmap)
+rownames(stressALLcrabs_distinct) <- stressALLcrabs_distinct$Trinity_ID #set Trinity IDs as rownames
+stressALLcrabs_distinct.heatmap <- stressALLcrabs_distinct[,-1] #remove redundant column
+head(stressALLcrabs_distinct.heatmap)
 ```
+3033 rows
+
 
 MAKING A HEAT MAP WITH THAT MANY GENES resulted in R and my laptop shutting down 
 
 ```{r}
-#pheatmap(ALLcrabs.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
 
 
