@@ -409,10 +409,13 @@ head(stressALLcrabs_distinct.heatmap)
 ```
 3033 rows
 
+Cluster by columns (samples)
 ```{r}
 pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
 ```
 
+
+Cluster by rows (Trinity IDs)
 ```{r}
 pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
 ```
