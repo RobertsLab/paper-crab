@@ -412,8 +412,16 @@ head(stressALLcrabs_distinct.heatmap)
 MAKING A HEAT MAP WITH THAT MANY GENES resulted in R and my laptop shutting down 
 
 ```{r}
-pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
 ```
+
+```{r}
+pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
+```
+
+
+
+
 
 
 
