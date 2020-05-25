@@ -420,12 +420,50 @@ Cluster by rows (Trinity IDs)
 pheatmap(stressALLcrabs_distinct.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
 ```
 
+# Create a heatmap using normalized counts comparing ABC and GHI (day 2) using the ABC GHI DEG list
 
 
+Read in normalized count matrix:
+```{r}
+norm_cts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
+head(norm_cts)
+```
 
+Subset rows to do with crabs ABC and GHI (just Day 2): 
+```{r}
+abcghi_nmcts <- select(norm_cts, X, X359_quant, X349_quant, X334_quant, X272_quant, X294_quant, X280_quant)
+head(abcghi_nmcts)
+```
 
+Rename columns: 
+```{r}
+colnames(abcghi_nmcts) <- c("X", "CrabA", "CrabB", "CrabC", "CrabG", "CrabH", "CrabI")
+head(abcghi_nmcts)
+```
 
+Set Trinity_ID as row names:
+```{r}
+rownames(abcghi_nmcts) <- abcghi_nmcts$X #set Trinity IDs as rownames
+abcghi_nmcts.heatmap <- abcghi_nmcts[,-1] #remove redundant column
+head(abcghi_nmcts.heatmap)
+```
 
+Create subset of Trinity IDs (the 5 DEGs!)
 
+```{r}
+include_list <- c("TRINITY_DN1456_c0_g1_i1", "TRINITY_DN1994_c0_g2_i2", "TRINITY_DN365_c0_g1_i1", "TRINITY_DN3830_c0_g1_i1", "TRINITY_DN3962_c0_g1_i7")
+abcghi_nmcts.heatmap.sub <- abcghi_nmcts.heatmap[include_list, ] 
+```
 
+```{r}
+abcghi_nmcts.heatmap.sub
+```
 
+```{r}
+heatmapGreens <- RColorBrewer::brewer.pal(9, "Greens")
+```
+
+Cluster by rows (Trinity IDs)
+```{r}
+pheatmap(abcghi_nmcts.heatmap.sub, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapGreens, fontsize_col = 20, fontsize_row = 12)
+```
