@@ -1,0 +1,24 @@
+---
+title: "annotate-DEGlist-ABCGHI"
+output: html_document
+---
+Rmd to annotate the 6 DEGs when comparing day 2 ABC to GHI crabs. 
+Crabs A, B, and C --> infected ambient (7/8˚C)
+Crabs G, H, and I --> infected elevated (10˚C)
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+Read in list of 6 DEGs: (.txt version where I fixed columns)
+```{r}
+degs <- read.delim()
+
+```
+
+
+
+
+
+
