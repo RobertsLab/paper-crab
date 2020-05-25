@@ -2,7 +2,7 @@
 title: "annotate-DEGlist-ABCGHI"
 output: html_document
 ---
-Rmd to annotate the 6 DEGs when comparing day 2 ABC to GHI crabs. 
+Rmd to annotate the 5 DEGs when comparing day 2 ABC to GHI crabs. 
 Crabs A, B, and C --> infected ambient (7/8˚C)
 Crabs G, H, and I --> infected elevated (10˚C)
 
@@ -11,13 +11,53 @@ library(tidyverse)
 library(dplyr)
 ```
 
-Read in list of 6 DEGs: (.txt version where I fixed columns)
+Read in list of 5 DEGs: (.txt version where I fixed columns)
 ```{r}
-degs <- read.delim()
+degs <- read.delim("../analyses/DEG-ABCGHI.txt", header = TRUE)
+head(degs)
+```
 
+Read in the uniprot-SP-GO.sorted file:
+```{r}
+uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_sp_GO)
 ```
 
 
+Rename some columns: 
+```{r}
+colnames(uniprot_sp_GO) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_sp_GO)
+```
+
+Upload crab transcriptome BLAST output (from transcriptome v. 1.5)
+```{r}
+blastout <- read.delim("../../project-crab/analyses/BLAST_to_GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+head(blastout)
+```
+Rename one column so that this file can be `join`-ed with the uniprot-SP-Go:
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+
+`join` blastout and uniprot_sp_GO by "uniprot_acc_ID" column:
+```{r}
+blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
+head(blastout_uniprot)
+```
+
+`join` the annotated blast output file with degs by Trinity_ID:
+```{r}
+degs_annot <- left_join(degs, blastout_uniprot, by = "Trinity_ID")
+head(degs_annot)
+```
+4 of the 5 were able to be `join`-ed to get GO information! 
+
+Write out annotated DEG list comparing elevated (GHI) and ambient (ABC) to paper-crab/analsyes:
+```{r}
+write.table(degs_annot, "../analyses/annot_DEGlist-ABCGHI.tab", quote = FALSE, row.names = FALSE, sep = '\t')
+```
 
 
 
