@@ -106,5 +106,7 @@ write.table(abcghi.sig, "../analyses/DEG-ABCGHI.tab", row.names = T, quote = FAL
 ```{bash}
 head ../analyses/DEG-ABCGHI.tab
 ```
-
+```{bash}
+wc -l ../analyses/DEG-ABCGHI.tab
+```
 
