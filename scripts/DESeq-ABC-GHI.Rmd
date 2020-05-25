@@ -8,6 +8,45 @@ Rmd to use `DESeq2` to get differentially expressed gene list from comparing Cra
 library(DESeq2)
 ```
 
+```{r}
+library(dplyr)
+library(tidyverse)
+```
 
+
+Read in the isoform count matrix from the 2020 Genewiz individual crab RNAseq data (normalized counts):
+```{r}
+norm_counts <- read.delim("../data/individual_crab-salmon.isoform.counts.matrix")
+head(norm_counts)
+```
+
+We only want day 2 samples from crabs A, B, C and G, H, I
+Crab A day 2 - 359
+Crab B day 2 - 349
+Crab C day 2 - 334
+Crab G day 2 - 272
+Crab H day 2 - 294
+Crab I day 2 - 280 
+
+ALSO! Select the first column "X" with Trinity IDs
+
+Subset those columns:
+```{r}
+abcghi <- select(norm_counts, X, X359_quant, X349_quant, X334_quant, X272_quant, X294_quant, X280_quant)
+head(abcghi)
+```
+
+Rename columns: 
+```{r}
+colnames(abcghi) <- c("X", "359_ambient", "349_ambient", "334_ambient", "272_elevated", "294_elevated", "280_elevated")
+head(abcghi)
+```
+
+Make Column X (Trinity IDs) row names:
+```{r}
+rownames(abcghi) <- abcghi$X
+abcghi <- abcghi[,-1]
+head(abcghi)
+```
 
 
