@@ -49,15 +49,27 @@ abcghi <- abcghi[,-1]
 head(abcghi)
 ```
 
-
-
-
-deseq2.colData <- data.frame(condition=factor(c(rep("Cold", 2), rep("Warm", 2))), 
-                             type=factor(rep("paired-end", 4)))
+Rest is done mirroring what SR did for temperature comparison (02-DeSeq-Temperature.Rmd).        
+Making a matrix for the comparison: 
+```{r}
+deseq2.colData <- data.frame(condition=factor(c(rep("Ambient", 3), rep("Elevated", 3))), type=factor(rep("paired-end", 6)))
 rownames(deseq2.colData) <- colnames(data)
-deseq2.dds <- DESeqDataSetFromMatrix(countData = tmdf,
+deseq2.dds <- DESeqDataSetFromMatrix(countData = abcghi,
                                      colData = deseq2.colData, 
                                      design = ~ condition)
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
