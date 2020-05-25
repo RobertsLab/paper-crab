@@ -125,6 +125,54 @@ top20 <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
 pheatmap(assay(ntd)[top20,])
 ```
 
+Try from DESeq2 manual: ntd heatmap
+```{r}
+select <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
+                decreasing = TRUE)[1:20]
+df <- as.data.frame(colData(deseq2.dds)[,c("condition", "type")])
+pheatmap(assay(ntd)[select,], cluster_rows = FALSE, show_rownames = FALSE, cluter_cols= FALSE, annotation_col = df)
+```
+
+vsd heatmap:
+```{r}
+pheatmap(assay(vsd)[select,], cluster_rows = FALSE, show_rownames = FALSE, cluster_cols = FALSE, annotation_col = df)
+```
+rld heatmap:
+```{r}
+pheatmap(assay(rld)[select,], cluster_rows = FALSE, show_rownames = FALSE, cluster_cols = FALSE, annotation_col = df)
+```
+Heatmap of sample to sample distances:
+```{r}
+sampleDists <- dist(t(assay(vsd)))
+```
+
+```{r}
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$type, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+```
+
+PCA 
+```{r}
+plotPCA(vsd, intgroup=c("condition","type"))
+```
+
+```{r}
+pcaData <- plotPCA(vsd, intgroup=c("condition", "type"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+``` 
+
 Try to save the variance stabilized transformed data for use in other heatmaps: 
 ```{r}
 ABCGHI_vst_degs <- getVarianceStabilizedData(deseq2.dds)
