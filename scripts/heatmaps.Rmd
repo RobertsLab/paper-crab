@@ -1,0 +1,29 @@
+---
+title: "heatmaps"
+output: html_document
+---
+Rmd to make heatmaps for the crab project.
+
+### Set up R Markdown document
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Install packages:
+(uncomment "install.packages("pheatmap")" if you need to install it)
+```{r}
+#install.packages("pheatmap")
+library(pheatmap)
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+#install.packages("RColorBrewer")
+library(RColorBrewer)
+```
+
+
+
