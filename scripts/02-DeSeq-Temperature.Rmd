@@ -105,7 +105,9 @@ top20 <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
 pheatmap(assay(ntd)[top20,])
 ```
 
-
+```{r}
+head(ntd)
+```
 
 
 
