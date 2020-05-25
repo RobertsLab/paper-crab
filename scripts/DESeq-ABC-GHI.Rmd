@@ -2,7 +2,7 @@
 title: "DESeq-crabsABC-crabsGHI"
 output: html_document
 ---
-Rmd to use `DESeq2` to get differentially expressed gene list from comparing Crabs A, B, and C (infected, ambient - days 0 and 2 combined) to Crabs G, H, and I (infected, elected - days 0 and 2 combined). 
+Rmd to use `DESeq2` to get differentially expressed gene list from comparing Crabs A, B, and C (infected, ambient - day 2) to Crabs G, H, and I (infected, elevated - day 2). Crabs A, B, and C will be combined into 1 group (infected, ambient, day 2) and crabs G, H, and I will be combined in 1 group (infected, elevated, day 2). 
 
 ```{r}
 library(DESeq2)
