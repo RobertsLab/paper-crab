@@ -14,10 +14,10 @@ library(tidyverse)
 ```
 
 
-Read in the isoform count matrix from the 2020 Genewiz individual crab RNAseq data (normalized counts):
+Read in the isoform count matrix from the 2020 Genewiz individual crab RNAseq data (un-normalized!!):
 ```{r}
-norm_counts <- read.delim("../data/individual_crab-salmon.isoform.counts.matrix")
-head(norm_counts)
+indiv_counts <- read.delim("../data/individual_crab-salmon.isoform.counts.matrix")
+head(indiv_counts)
 ```
 
 We only want day 2 samples from crabs A, B, C and G, H, I
@@ -32,7 +32,7 @@ ALSO! Select the first column "X" with Trinity IDs
 
 Subset those columns:
 ```{r}
-abcghi <- select(norm_counts, X, X359_quant, X349_quant, X334_quant, X272_quant, X294_quant, X280_quant)
+abcghi <- select(indiv_counts, X, X359_quant, X349_quant, X334_quant, X272_quant, X294_quant, X280_quant)
 head(abcghi)
 ```
 
@@ -48,5 +48,18 @@ rownames(abcghi) <- abcghi$X
 abcghi <- abcghi[,-1]
 head(abcghi)
 ```
+
+
+
+
+deseq2.colData <- data.frame(condition=factor(c(rep("Cold", 2), rep("Warm", 2))), 
+                             type=factor(rep("paired-end", 4)))
+rownames(deseq2.colData) <- colnames(data)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = tmdf,
+                                     colData = deseq2.colData, 
+                                     design = ~ condition)
+
+
+
 
 
