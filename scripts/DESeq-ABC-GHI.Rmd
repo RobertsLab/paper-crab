@@ -125,5 +125,9 @@ top20 <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
 pheatmap(assay(ntd)[top20,])
 ```
 
-
+Try to save the variance stabilized transformed data for use in other heatmaps: 
+```{r}
+ABCGHI_vst_degs <- getVarianceStabilizedData(deseq2.dds)
+head(ABCGHI_vst_degs)
+```
 
