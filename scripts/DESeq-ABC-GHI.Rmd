@@ -1,0 +1,13 @@
+---
+title: "DESeq-crabsABC-crabsGHI"
+output: html_document
+---
+Rmd to use `DESeq2` to get differentially expressed gene list from comparing Crabs A, B, and C (infected, ambient - days 0 and 2 combined) to Crabs G, H, and I (infected, elected - days 0 and 2 combined). 
+
+```{r}
+library(DESeq2)
+```
+
+
+
+
