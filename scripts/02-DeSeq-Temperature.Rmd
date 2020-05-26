@@ -147,6 +147,10 @@ plotPCA(vsd, intgroup=c("condition","type"))
 ```
 
 ```{r}
+library(ggplot2)
+```
+
+```{r}
 pcaData <- plotPCA(vsd, intgroup=c("condition", "type"), returnData=TRUE)
 percentVar <- round(100 * attr(pcaData, "percentVar"))
 ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
