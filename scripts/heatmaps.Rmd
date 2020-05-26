@@ -2,14 +2,14 @@
 title: "heatmaps"
 output: html_document
 ---
-Rmd to make heatmaps for the crab project.
+Rmd to make heatmaps for the crab project. NEED TO FIGURE OUT HOW TO GET THE COUNTS TO BE VARIANCE STABILIZED TRANSFORMED!!! Or some other transformation... because right now the range of normalized counts is way tooo big. 
 
 ### Set up R Markdown document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Install packages:
+## Install/load packages:
 (uncomment "install.packages("pheatmap")" if you need to install it)
 ```{r}
 #install.packages("pheatmap")
@@ -18,6 +18,7 @@ library(pheatmap)
 
 ```{r}
 library(dplyr)
+library(DESeq2)
 ```
 
 ```{r}
@@ -25,5 +26,243 @@ library(dplyr)
 library(RColorBrewer)
 ```
 
+# Read in normalized count data from individual samples:
+```{r}
+norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
+head(norm_counts)
+```
+40,035 rows of normalized count data for 24 samples
+
+
+Rename columns: 
+```{r}
+colnames(norm_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(norm_counts)
+```
+
+
+# Create heatmap of temperature DEG list 
+
+Read in Temperature DEG list (423)
+```{r}
+temp_degs <- read.delim("../analyses/DEG-temperature.txt", header = TRUE)
+head(temp_degs)
+```
+
+`join` with norm_counts by "Trinity_ID"
+```{r}
+temp_degs_counts <- left_join(norm_counts, temp_degs, by = "Trinity_ID")
+head(temp_degs_counts)
+```
+
+Just want the ones that match! (list of 423)
+```{r}
+tempdegs_counts_match <- filter(temp_degs_counts, baseMean != "NA")
+head(tempdegs_counts_match)
+```
+423 rows! Nice!
+
+Create heatmap colors:
+```{r}
+heatmapReds <- RColorBrewer::brewer.pal(9, "Reds")
+```
+
+Pull out just the sample count data:
+```{r}
+tempdegs <- select(tempdegs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabF_0, CrabF_2, CrabF_17, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(tempdegs)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(tempdegs) <- tempdegs$Trinity_ID #set Trinity IDs as rownames
+tempdegs.heatmap <- tempdegs[,-1] #remove redundant column
+head(tempdegs.heatmap)
+```
+
+Round up to integers
+```{r}
+tempdegs.heatmap <- round(tempdegs.heatmap,0)
+head(tempdegs.heatmap)
+```
+
+```{r}
+deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 3), rep("CrabB", 3), rep("CrabC", 3), rep("CrabD", 3), rep("CrabE", 3), rep("CrabF", 3), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
+                             type=factor(rep("paired-end", 24)))
+rownames(deseq2.colData) <- colnames(data)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = tempdegs.heatmap,
+                                     colData = deseq2.colData, 
+                                     design = ~ condition)
+```
+
+```{r}
+deseq2.dds <- DESeq(deseq2.dds)
+deseq2.res <- results(deseq2.dds)
+deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
+```
+
+```{r}
+head(deseq2.res)
+```
+
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
+```
+
+```{r}
+#transform data 
+vsd <- varianceStabilizingTransformation(deseq2.dds, blind = FALSE)#variance stabilizing transoformation
+rld <- rlog(deseq2.dds, blind = FALSE) #controls for rows with few counts
+ntd <- normTransform(deseq2.dds) #transforms data for plotting
+top10 <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
+               decreasing = TRUE)[1:10] #average counts for each gene and select top 20 most abundant genes
+pheatmap(assay(ntd)[top10,])
+```
+
+```{r}
+pheatmap(tempdegs.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
+
+# Create heatmap with infection DEG list
+Just using crabs D (uninfected) and E (infected) across time
+
+
+Read in Temperature DEG list (772)
+```{r}
+infection_degs <- read.delim("../analyses/DEG-infection.txt", header = TRUE)
+head(infection_degs)
+```
+
+`join` with norm_counts by "Trinity_ID"
+```{r}
+infection_degs_counts <- left_join(norm_counts, infection_degs, by = "Trinity_ID")
+head(infection_degs_counts)
+```
+
+Just want the ones that match! (list of 772)
+```{r}
+infectdegs_counts_match <- filter(infection_degs_counts, baseMean != "NA")
+head(infectdegs_counts_match)
+```
+772! 
+
+Pull out just the sample count data:
+```{r}
+infectiondegs <- select(infectdegs_counts_match, Trinity_ID, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17)
+head(infectiondegs)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs) <- infectiondegs$Trinity_ID #set Trinity IDs as rownames
+infectiondegs.heatmap <- infectiondegs[,-1] #remove redundant column
+head(infectiondegs.heatmap)
+```
+
+Round the data up to integers:
+
+```{r}
+infectiondegs.heatmap <- round(infectiondegs.heatmap,0)
+head(infectiondegs.heatmap)
+```
+
+
+```{r}
+deseq2.colData <- data.frame(condition=factor(c(rep("Uninfected", 3), rep("Infected", 3))), 
+                             type=factor(rep("paired-end", 6)))
+rownames(deseq2.colData) <- colnames(data)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = infectiondegs.heatmap,
+                                     colData = deseq2.colData, 
+                                     design = ~ condition)
+```
+```{r}
+deseq2.dds <- DESeq(deseq2.dds)
+deseq2.res <- results(deseq2.dds)
+deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
+```
+```{r}
+head(deseq2.res)
+```
+
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
+```
+
+```{r}
+#transform data 
+vsd <- varianceStabilizingTransformation(deseq2.dds, blind = FALSE)#variance stabilizing transoformation
+rld <- rlog(deseq2.dds, blind = FALSE) #controls for rows with few counts
+ntd <- normTransform(deseq2.dds) #transforms data for plotting
+top10 <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
+               decreasing = TRUE)[1:10] #average counts for each gene and select top 20 most abundant genes
+pheatmap(assay(ntd)[top10,])
+```
+
+```{r}
+pheatmap(infectiondegs.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
+
+# Create heatmap using the ABC GHI DEG list (5)
+
+Read in ABC v GHI DEG list (5)
+```{r}
+ABCGHI_degs <- read.delim("../analyses/DEG-ABCGHI.txt", header = TRUE)
+head(ABCGHI_degs)
+```
+
+`join` with norm_counts by "Trinity_ID"
+```{r}
+ABCGHI_degs_counts <- left_join(norm_counts, ABCGHI_degs, by = "Trinity_ID")
+head(ABCGHI_degs_counts)
+```
+
+Just want the ones that match! (list of 5)
+```{r}
+ABCGHI_degs_counts_match <- filter(ABCGHI_degs_counts, baseMean != "NA")
+head(ABCGHI_degs_counts_match)
+```
+
+Pull out just the sample count data:
+```{r}
+ABCGHIdegs <- select(ABCGHI_degs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabB_0, CrabB_2, CrabC_0, CrabC_2, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(ABCGHIdegs)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(ABCGHIdegs) <- ABCGHIdegs$Trinity_ID #set Trinity IDs as rownames
+ABCGHIdegs.heatmap <- ABCGHIdegs[,-1] #remove redundant column
+head(ABCGHIdegs.heatmap)
+```
+
+Round the data up to integers:
+
+```{r}
+ABCGHIdegs.heatmap <- round(ABCGHIdegs.heatmap,0)
+head(ABCGHIdegs.heatmap)
+```
+
+```{r}
+deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 2), rep("CrabB", 2), rep("CrabC", 2), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
+                             type=factor(rep("paired-end", 12)))
+rownames(deseq2.colData) <- colnames(data)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs.heatmap,
+                                     colData = deseq2.colData, 
+                                     design = ~ condition)
+```
+
+```{r}
+#deseq2.dds <- DESeq(deseq2.dds)
+#deseq2.res <- results(deseq2.dds)
+#deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
+```
+Error - getting vst won't work for this dataset...     
+Error in estimateSizeFactorsForMatrix(counts(object), locfunc = locfunc, : every gene contains at least one zero, cannot compute log geometric means 
+
+```{r}
+pheatmap(ABCGHIdegs.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+```
 
 
