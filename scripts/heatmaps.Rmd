@@ -482,6 +482,21 @@ rownames(abcghidegs_allcrabs) <- abcghidegs_allcrabs$Trinity_ID #set Trinity IDs
 ABCGHIdegs_all.heatmap <- abcghidegs_allcrabs[,-1] #remove redundant column
 head(ABCGHIdegs_all.heatmap)
 ```
+TRINITY_DN1994_c0_g2_i2 --> Mitochondrial import inner membrane translocase subunit Tim23	      
+https://www.uniprot.org/uniprot/O14925      
+
+TRINITY_DN3962_c0_g1_i7 --> Probable RNA-directed DNA polymerase from transposon BS (EC 2.7.7.49) (Reverse transcriptase)	      
+https://www.uniprot.org/uniprot/Q95SX7        
+
+TIRNITY_DN1456_c0_g1_i1 --> Huntingtin-interacting protein K (Huntingtin yeast partner K)        
+https://pubmed.ncbi.nlm.nih.gov/27017930/         
+Negative regulator of heat shock response        
+https://www.uniprot.org/uniprot/Q9NX55        
+
+TRINITY_DN365_c0_g1_i1 --> Breakpoint cluster region protein (EC 2.7.11.1)	Bcr Kiaa3017        
+https://www.uniprot.org/uniprot/Q6PAJ1       
+
+TRINITY_DN3830_c0_g1_i1 --> NO UNIPROT-SP-GO match
 
 
 ```{r}
@@ -492,4 +507,11 @@ Try with color scheme RedBlue (0 value = white)
 ```{r}
 pheatmap(ABCGHIdegs_all.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
 ```
+
+```{r}
+pheatmap(ABCGHIdegs_all.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = TRUE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 12, fontsize_row = 12)
+```
+
+
+
 
