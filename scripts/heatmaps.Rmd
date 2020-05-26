@@ -286,6 +286,32 @@ ABCGHIdegs_all.heatmap <- abcghidegs_allcrabs[,-1] #remove redundant column
 head(ABCGHIdegs_all.heatmap)
 ```
 
+Round the data up to integers:
+
+```{r}
+ABCGHIdegs_all.heatmap <- round(ABCGHIdegs_all.heatmap,0)
+head(ABCGHIdegs_all.heatmap)
+```
+
+```{r}
+deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 3), rep("CrabB", 3), rep("CrabC", 3), rep("CrabD", 3), rep("CrabE", 3), rep("CrabF", 3), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
+                             type=factor(rep("paired-end", 24)))
+rownames(deseq2.colData) <- colnames(data)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs_all.heatmap,
+                                     colData = deseq2.colData, 
+                                     design = ~ condition)
+```
+
+```{r}
+deseq2.dds <- DESeq(deseq2.dds)
+deseq2.res <- results(deseq2.dds)
+deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
+```
+Error in estimateSizeFactorsForMatrix(counts(object), locfunc = locfunc, : every gene contains at least one zero, cannot compute log geometric means
+
+Too many zeros... can't perform vst. 
+
+
 ```{r}
 pheatmap(ABCGHIdegs_all.heatmap, cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
