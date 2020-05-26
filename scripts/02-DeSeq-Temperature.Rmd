@@ -184,7 +184,7 @@ Try to save the variance stabilized transformed data for use in other heatmaps:
 temp_vst_degs <- getVarianceStabilizedData(deseq2.dds)
 head(temp_vst_degs)
 ```
-It's 161,740 rows... doesn't seem right... 
+It's 161,740 rows... I just want the vst values for the 423 DEGs... 
 
 
 Write out the vst deg temp:
