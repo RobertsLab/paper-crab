@@ -303,9 +303,9 @@ deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs_all.heatmap,
 ```
 
 ```{r}
-deseq2.dds <- DESeq(deseq2.dds)
-deseq2.res <- results(deseq2.dds)
-deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
+#deseq2.dds <- DESeq(deseq2.dds)
+#deseq2.res <- results(deseq2.dds)
+#deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
 ```
 Error in estimateSizeFactorsForMatrix(counts(object), locfunc = locfunc, : every gene contains at least one zero, cannot compute log geometric means
 
