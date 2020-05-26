@@ -244,13 +244,15 @@ ABCGHIdegs.heatmap <- round(ABCGHIdegs.heatmap,0)
 head(ABCGHIdegs.heatmap)
 ```
 
+
+`DESeq2` doesn't work on this data - too many zeros
 ```{r}
-deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 2), rep("CrabB", 2), rep("CrabC", 2), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
-                             type=factor(rep("paired-end", 12)))
-rownames(deseq2.colData) <- colnames(data)
-deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs.heatmap,
-                                     colData = deseq2.colData, 
-                                     design = ~ condition)
+#deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 2), rep("CrabB", 2), rep("CrabC", 2), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
+#                             type=factor(rep("paired-end", 12)))
+#rownames(deseq2.colData) <- colnames(data)
+#deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs.heatmap,
+#                                     colData = deseq2.colData, 
+#                                     design = ~ condition)
 ```
 
 ```{r}
@@ -294,13 +296,14 @@ ABCGHIdegs_all.heatmap <- round(ABCGHIdegs_all.heatmap,0)
 head(ABCGHIdegs_all.heatmap)
 ```
 
+`DESeq2` doesn't work on this data - too many zeros 
 ```{r}
-deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 3), rep("CrabB", 3), rep("CrabC", 3), rep("CrabD", 3), rep("CrabE", 3), rep("CrabF", 3), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
-                             type=factor(rep("paired-end", 24)))
-rownames(deseq2.colData) <- colnames(data)
-deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs_all.heatmap,
-                                     colData = deseq2.colData, 
-                                     design = ~ condition)
+#deseq2.colData <- data.frame(condition=factor(c(rep("CrabA", 3), rep("CrabB", 3), rep("CrabC", 3), rep("CrabD", 3), rep("CrabE", 3), rep("CrabF", 3), rep("CrabG", 2), rep("CrabH", 2), rep("CrabI", 2))), 
+#                             type=factor(rep("paired-end", 24)))
+#rownames(deseq2.colData) <- colnames(data)
+#deseq2.dds <- DESeqDataSetFromMatrix(countData = ABCGHIdegs_all.heatmap,
+#                                     colData = deseq2.colData, 
+#                                     design = ~ condition)
 ```
 
 ```{r}
