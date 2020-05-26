@@ -110,14 +110,16 @@ head(deseq2.res)
 dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
 ```
 
+
+NEED TO FIGURE OUT HOW TO KEEP SAMPLES IN ORDER ALONG THE BOTTOM!!
 ```{r}
-#transform data 
+#transform data (3 diff ways)
 vsd <- varianceStabilizingTransformation(deseq2.dds, blind = FALSE)#variance stabilizing transoformation
 rld <- rlog(deseq2.dds, blind = FALSE) #controls for rows with few counts
 ntd <- normTransform(deseq2.dds) #transforms data for plotting
 top10 <- order(rowMeans(counts(deseq2.dds, normalized = TRUE)),
-               decreasing = TRUE)[1:10] #average counts for each gene and select top 20 most abundant genes
-pheatmap(assay(ntd)[top10,])
+               decreasing = TRUE)[1:10] #average counts for each gene and select top 10 most abundant genes
+pheatmap(assay(ntd)[top10,], scale = "row")
 ```
 
 ```{r}
