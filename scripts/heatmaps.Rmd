@@ -2,7 +2,7 @@
 title: "heatmaps"
 output: html_document
 ---
-Rmd to make heatmaps for the crab project. NEED TO FIGURE OUT HOW TO GET THE COUNTS TO BE VARIANCE STABILIZED TRANSFORMED!!! Or some other transformation... because right now the range of normalized counts is way tooo big. 
+Rmd to make heatmaps for the crab project. Used normalized counts, then got variance stabililzed transformed values using `DESeq2`
 
 ### Set up R Markdown document
 ```{r setup, include=FALSE}
