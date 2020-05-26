@@ -182,3 +182,83 @@ ABCGHI_vst_degs <- getVarianceStabilizedData(deseq2.dds)
 head(ABCGHI_vst_degs)
 ```
 
+# Now try the same comparison (ABC v GHI) but use time as factor
+## CLEAR ENVIRONMENT
+
+Read in the isoform count matrix from the 2020 Genewiz individual crab RNAseq data (un-normalized!!):
+```{r}
+indiv_counts <- read.delim("../data/individual_crab-salmon.isoform.counts.matrix")
+head(indiv_counts)
+```
+
+Want those for Day 0 and Day 2, for crabs ABC and GHI:
+Crab A 0,2 = 178, 359
+Crab B 0,2 = 118, 349
+Crab C 0,2 = 132, 334
+Crab G 0,2 = 173, 272
+Crab H 0,2 = 72,  294
+Crab I 0,2 = 127, 280
+
+Subset those columns:
+```{r}
+abcghi_time <- select(indiv_counts, X, X178_quant, X359_quant, X118_quant, X349_quant, X132_quant, X334_quant, X173_quant, X272_quant, X72_quant, X294_quant, X127_quant, X280_quant)
+head(abcghi_time)
+```
+
+Rename columns: 
+```{r}
+colnames(abcghi_time) <- c("X", "AmbientA_0", "AmbientA_2", "AmbientB_0", "AmbientB_2", "AmbientC_0", "AmbientC_2", "ElevatedG_0", "ElevatedG_2", "ElevatedH_0", "ElevatedH_2", "ElevatedI_0", "ElevatedI_2")
+head(abcghi_time)
+```
+
+Make Column X (Trinity IDs) row names:
+```{r}
+rownames(abcghi_time) <- abcghi_time$X
+abcghi_time <- abcghi_time[,-1]
+head(abcghi_time)
+```
+
+Round counts up to integers!!!
+```{r}
+abcghi_time <- round(abcghi_time,0)
+head(abcghi_time)
+```
+
+Crabs ABC are ambient, all infected. Two time points.
+Crabs GHI are elevated, all infected. Two time points. 
+
+Conditions - ambient v elevated
+Factors - 2 time points
+
+Making a matrix for the comparison
+```{r}
+deseq2.colData <- data.frame(condition=factor(c(rep("Ambient", 6), rep("Elevated", 6))), type=factor(rep("paired-end", 12)))
+rownames(deseq2.colData) <- colnames(data)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = abcghi_time,
+                                     colData = deseq2.colData, 
+                                     design = ~ condition)
+```
+
+```{r}
+deseq2.dds <- DESeq(deseq2.dds)
+deseq2.res <- results(deseq2.dds)
+deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
+```
+
+```{r}
+head(deseq2.res)
+```
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
+```
+
+Try the time as factor thing:
+```{r}
+deseq2.dds$group <- factor(paste0(deseq2.dds$temp, deseq2.dds$day))
+design(deseq2.dds) <- ~ group
+deseq2.dds <- DESeq(deseq2.dds)
+resultsNames(deseq2.dds)
+results(deseq2.dds, contrast = c("group", "Ambient", "Elevated"))
+```
+
