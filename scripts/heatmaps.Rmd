@@ -122,7 +122,7 @@ pheatmap(assay(ntd)[top10,], scale = "row", cluster_cols = FALSE)
 ```
 
 ```{r}
-pheatmap(tempdegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
+#pheatmap(tempdegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
 
 # Create heatmap with infection DEG list
@@ -343,13 +343,6 @@ colnames(norm_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC
 head(norm_counts)
 ```
 
-Transform counts: 
-FISH 560 notes - don't log trasform count data....
-Try square root:  
-```{r}
-norm_counts_sqrt <- 
-
-```
 
 ## Heatmap of temperature DEG list across all samples
 Read in Temperature DEG list (423)
