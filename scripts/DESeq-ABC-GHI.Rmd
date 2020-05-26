@@ -162,6 +162,9 @@ PCA
 ```{r}
 plotPCA(vsd, intgroup=c("condition","type"))
 ```
+```{r}
+library(ggplot2)
+```
 
 ```{r}
 pcaData <- plotPCA(vsd, intgroup=c("condition", "type"), returnData=TRUE)
