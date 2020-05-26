@@ -512,6 +512,42 @@ head(noz_infectiondegs_alltwodays.heatmap)
 pheatmap(noz_infectiondegs_alltwodays.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
 ```
 
+### Now just ABC and GHI and E (infected cold) at two time points: 
+
+Pull out just the sample count data:
+```{r}
+infectiondegs_abceghitwodays <- select(infectdegs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabB_0, CrabB_2, CrabC_0, CrabC_2, CrabE_0, CrabE_2, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(infectiondegs_abceghitwodays)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_abceghitwodays) <- infectiondegs_abceghitwodays$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_abceghitwodays.heatmap <-infectiondegs_abceghitwodays[,-1] #remove redundant column
+head(infectiondegs_abceghitwodays.heatmap)
+```
+
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_abceghitwodays.heatmap <- infectiondegs_abceghitwodays.heatmap[rowSums(infectiondegs_abceghitwodays.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_abceghitwodays.heatmap)
+```
+345 rows
+
+```{r}
+pheatmap(noz_infectiondegs_abceghitwodays.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+```{r}
+pheatmap(noz_infectiondegs_abceghitwodays.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+```{r}
+pheatmap(noz_infectiondegs_abceghitwodays.heatmap, scale = "row", cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+
 ## Create heatmap using ABC v GHI DEG list (5) on all samples:
 
 Read in ABC v GHI DEG list (5)
