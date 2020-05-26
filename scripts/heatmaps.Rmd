@@ -397,7 +397,14 @@ head(noz_tempdegs.heatmap)
 ```{r}
 pheatmap(noz_tempdegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
+Try with new color scheme so that value of 0 is white:
+```{r}
+heatmapRedBlue <- RColorBrewer::brewer.pal(11, "RdBu")
+```
 
+```{r}
+pheatmap(noz_tempdegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
 
 ## Create heatmap with infection DEG list
 Just using crabs D (uninfected) and E (infected) across time
@@ -444,6 +451,11 @@ Woo! it worked.
 ```{r}
 pheatmap(noz_infectiondegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
+Try with heatmap Red-blue (0 value = white)
+```{r}
+pheatmap(noz_infectiondegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
 
 ## Create heatmap using ABC v GHI DEG list (5) on all samples:
 
@@ -483,5 +495,8 @@ head(ABCGHIdegs_all.heatmap)
 pheatmap(ABCGHIdegs_all.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapReds, fontsize_col = 20, fontsize_row = 12)
 ```
 
-
+Try with color scheme RedBlue (0 value = white)
+```{r}
+pheatmap(ABCGHIdegs_all.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
 
