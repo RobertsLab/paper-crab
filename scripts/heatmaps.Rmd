@@ -399,6 +399,10 @@ heatmapRedBlue <- RColorBrewer::brewer.pal(11, "RdBu")
 pheatmap(noz_tempdegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
 ```
 
+```{r}
+pheatmap(noz_tempdegs.heatmap, scale = "row", cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
 ## Create heatmap with infection DEG list
 Just using crabs D (uninfected) and E (infected) across time
 
@@ -449,6 +453,64 @@ Try with heatmap Red-blue (0 value = white)
 pheatmap(noz_infectiondegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
 ```
 
+```{r}
+pheatmap(noz_infectiondegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+```{r}
+pheatmap(noz_infectiondegs.heatmap, scale = "row", cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+Crab E - infected 
+Crab D - uninfected
+
+### same thing but with more crabs comparing infection over time (will show effects of temperature on infection)
+Pull out just the sample count data:
+```{r}
+infectiondegs_allcrabs <- select(infectdegs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabF_0, CrabF_2, CrabF_17, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(infectiondegs_allcrabs)
+```
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_allcrabs) <- infectiondegs_allcrabs$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_allcrabs.heatmap <- infectiondegs_allcrabs[,-1] #remove redundant column
+head(infectiondegs_allcrabs.heatmap)
+```
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_allcrabs.heatmap <- infectiondegs_allcrabs.heatmap[rowSums(infectiondegs_allcrabs.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_allcrabs.heatmap)
+```
+447 rows:
+
+```{r}
+pheatmap(noz_infectiondegs_allcrabs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+### Try again with fewer samples
+Pull out just the sample count data:
+```{r}
+infectiondegs_alltwodays <- select(infectdegs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabB_0, CrabB_2, CrabC_0, CrabC_2, CrabD_0, CrabD_2, CrabE_0, CrabE_2, CrabF_0, CrabF_2, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(infectiondegs_alltwodays)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_alltwodays) <- infectiondegs_alltwodays$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_alltwodays.heatmap <-infectiondegs_alltwodays[,-1] #remove redundant column
+head(infectiondegs_alltwodays.heatmap)
+```
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_alltwodays.heatmap <- infectiondegs_alltwodays.heatmap[rowSums(infectiondegs_alltwodays.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_alltwodays.heatmap)
+```
+349 rows
+
+```{r}
+pheatmap(noz_infectiondegs_alltwodays.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
 
 ## Create heatmap using ABC v GHI DEG list (5) on all samples:
 
