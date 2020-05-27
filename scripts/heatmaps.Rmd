@@ -598,6 +598,33 @@ head(noz_infectiondegs_alldaytwo.heatmap)
 pheatmap(noz_infectiondegs_alldaytwo.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
 ```
 
+## Just infected crabs at day two (exclude D and F)
+Pull out just the sample count data:
+```{r}
+infectiondegs_infectdaytwo <- select(infectdegs_counts_match, Trinity_ID, CrabA_2, CrabB_2, CrabC_2, CrabE_2, CrabG_2, CrabH_2, CrabI_2)
+head(infectiondegs_infectdaytwo)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_infectdaytwo) <- infectiondegs_infectdaytwo$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_infectdaytwo.heatmap <-infectiondegs_infectdaytwo[,-1] #remove redundant column
+head(infectiondegs_infectdaytwo.heatmap)
+```
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_infectdaytwo.heatmap <- infectiondegs_infectdaytwo.heatmap[rowSums(infectiondegs_infectdaytwo.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_infectdaytwo.heatmap)
+```
+242 rows 
+
+```{r}
+pheatmap(noz_infectiondegs_infectdaytwo.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+Just infected crabs at day 2. ABC - ambient. E- decreased. GHI - elevated. 
+
+
 ## Crab A and E all time points with infection DEGs
 
 Pull out just the sample count data:
