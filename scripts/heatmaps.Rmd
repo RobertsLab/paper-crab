@@ -548,6 +548,32 @@ pheatmap(noz_infectiondegs_abceghitwodays.heatmap, scale = "row", cluster_row = 
 ```
 
 
+Try same thing but with all day 0 on left, day 2 on right: 
+Pull out just the sample count data:
+```{r}
+infectiondegs_abceghi_twodays <- select(infectdegs_counts_match, Trinity_ID, CrabA_0, CrabB_0, CrabC_0, CrabE_0, CrabG_0, CrabH_0, CrabI_0, CrabA_2, CrabB_2, CrabC_2, CrabE_2, CrabG_2, CrabH_2, CrabI_2)
+head(infectiondegs_abceghi_twodays)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_abceghi_twodays) <- infectiondegs_abceghi_twodays$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_abceghi_twodays.heatmap <-infectiondegs_abceghi_twodays[,-1] #remove redundant column
+head(infectiondegs_abceghi_twodays.heatmap)
+```
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_abceghi_twodays.heatmap <- infectiondegs_abceghi_twodays.heatmap[rowSums(infectiondegs_abceghi_twodays.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_abceghi_twodays.heatmap)
+```
+345 rows
+
+```{r}
+pheatmap(noz_infectiondegs_abceghi_twodays.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+
 ## Create heatmap using ABC v GHI DEG list (5) on all samples:
 
 Read in ABC v GHI DEG list (5)
