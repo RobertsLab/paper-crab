@@ -624,6 +624,16 @@ pheatmap(noz_infectiondegs_infectdaytwo.heatmap, scale = "row", cluster_row = TR
 ```
 Just infected crabs at day 2. ABC - ambient. E- decreased. GHI - elevated. 
 
+cluster by columns
+```{r}
+pheatmap(noz_infectiondegs_infectdaytwo.heatmap, scale = "row", cluster_row = FALSE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+Cluster by both:
+```{r}
+pheatmap(noz_infectiondegs_infectdaytwo.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = TRUE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
 
 ## Crab A and E all time points with infection DEGs
 
