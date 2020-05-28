@@ -1,0 +1,5 @@
+---
+title: "Kaplan meier curve for crabs"
+output: html_document
+---
+Rmd to make a kaplan meier survival curve for the crabs. 
