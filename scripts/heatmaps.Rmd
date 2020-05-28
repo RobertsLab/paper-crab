@@ -538,6 +538,22 @@ pheatmap(ABCGHIdegs_all.heatmap, scale = "row", cluster_row = TRUE, cluster_cols
 abcghidegs_twodays <- select(ABCGHI_degs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabB_0, CrabB_2, CrabC_0, CrabC_2, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
 head(abcghidegs_twodays)
 ```
+TRINITY_DN1994_c0_g2_i2 Mitochondrial import inner membrane translocase subunit Tim23	 
+Higher in Elevated temp 
+
+TRINITY_DN3962_c0_g1_i7 Probable RNA-directed DNA polymerase from transposon BS (EC 2.7.7.49)
+Higher in elevated temp
+
+TRINITY_DN1456_c0_g1_i1 Huntingtin-interacting protein K (Huntingtin yeast partner K)
+HYPK C15orf63 HSPC136	Homo sapiens (Human)
+Higher in Crab B than in Crab G 
+
+TRINITY_DN365_c0_g1_i1 Breakpoint cluster region protein (EC 2.7.11.1)	Bcr Kiaa3017	
+Higher in Ambient
+
+TRINITY_DN3830_c0_g1_i1 NO GO info
+Higher in elevated
+
 
 Set Trinity_ID as row names:
 ```{r}
