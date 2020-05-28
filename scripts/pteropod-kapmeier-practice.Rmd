@@ -1,0 +1,55 @@
+---
+title: "practice making kaplan meier curve with pteropod data"
+output: html_document
+---
+Practice.
+Using this Rmd from Shelly: https://github.com/shellytrigg/pteropod_pHxDO_metabolomics/blob/master/survival/2016_pteropod_survival_paul_code_adapted.Rmd 
+
+1. Install packages / Load libraries
+```{r}
+#install.packages("FSA")
+```
+
+```{r}
+#install.packages("survminer")
+```
+
+```{r}
+#install.packages("lme4")
+```
+
+```{r}
+#install.packages("lmerTest")
+```
+
+```{r}
+#install.packages("coxme")
+```
+
+```{r, load_libraries, echo = FALSE}
+library(readxl)
+library(plyr)
+library(tidyr)
+library(ggplot2)
+library(FSA)
+library(survminer)
+library(survival)
+library(lme4)
+library(lmerTest)
+library(knitr)
+library(coxme)
+library(survMisc)
+library(gridExtra)
+```
+
+2. Read in data
+```{r,read_in_data, echo = TRUE}
+#survival data
+d <- read_xlsx("../../../../Downloads/pteropod_pHxDO2016_masterdatasheet.xlsx", sheet = "sample IDs living", skip = 2)
+#treatment data
+treatments <- read.csv("https://raw.githubusercontent.com/shellytrigg/Seawater-Chemistry-Analysis/master/2016-17_PteropodExp_WaterChem/PteropodWaterChem/Treatments.csv", stringsAsFactors = FALSE)
+treatments$MOATS <- paste0("M",treatments$MOATS)
+class(treatments) 
+```
+
+
