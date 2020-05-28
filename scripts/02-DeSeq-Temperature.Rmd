@@ -90,6 +90,42 @@ head ../analyses/DEG-temperature.tab
 wc -l ../analyses/DEG-temperature.tab
 ```
 
+`join` DEG-temperature.tab with tmdf count data to get which were higher in warm and which were lower in warm
+```{r}
+#read in deg-temperature.txt
+deg_temp <- read.delim("../analyses/DEG-temperature.txt", sep = '\t')
+head(deg_temp)
+```
+```{r}
+#make Trinity IDs into a column in tmdf
+df <- tmdf
+names <- rownames(df)
+rownames(df) <- NULL
+data <- cbind(names, df)
+
+#rename column 1 in tmdf
+colnames(data) <- c("Trinity_ID", "822_cold", "823_cold", "824_warm", "825_warm")
+head(data)
+```
+
+`join` based on Trinity ID
+```{r}
+degs_counts <- left_join(data, deg_temp, by = "Trinity_ID")
+head(degs_counts)
+```
+
+Only want the ones that match!
+```{r}
+tempdegs_counts_match <- filter(degs_counts, baseMean != "NA")
+head(tempdegs_counts_match)
+```
+423 rows! 
+
+write out
+```{r}
+write.table(tempdegs_counts_match, "../analyses/tempDEG-genecounts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
 #Make heatmap of top 20 
 ```{r}
 library(pheatmap)
