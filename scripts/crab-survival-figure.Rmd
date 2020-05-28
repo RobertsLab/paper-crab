@@ -3,3 +3,31 @@ title: "Kaplan meier curve for crabs"
 output: html_document
 ---
 Rmd to make a kaplan meier survival curve for the crabs. 
+
+Install packages:
+```{r}
+#install.packages("survminer")
+```
+
+Load packages:
+```{r}
+library(survminer)
+library(survival)
+library(dplyr)
+```
+
+```{r}
+surv_data <- read.delim("../analyses/crab-survival-data.txt", sep = '\t')
+head(surv_data)
+```
+
+```{r}
+#make a surv object to pass into coxme
+surv_crab <- Surv(time = surv_data$Day, event = surv_data$Dead, type = "right")
+head(surv_crab)
+```
+
+
+```{r}
+ggsurvplot(survfit(surv_crab ~ Temperature, surv_data), risk.table = FALSE, pval = FALSE, conf.int = TRUE, palette = "npg", break.x.by = 1, xlim = c(1,17) , xlab = "Time (days)")
+```
