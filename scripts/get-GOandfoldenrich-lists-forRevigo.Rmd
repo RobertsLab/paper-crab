@@ -1,0 +1,49 @@
+---
+title: "GO lists for DAVID"
+output: html_document
+---
+Get lists of GO IDs with Fold Enrichment values for ReviGO.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+## Temp degs:
+```{r}
+#load in david output from temperature DEGs with transcriptome v. 1.5 as background:
+temp_david <- read.delim("../analyses/DAVID-enrich-temp.txt", sep = '\t')
+head(temp_david)
+```
+
+filter out term and fold enrichment:
+```{r}
+temp_forrevigo <- select(temp_david, Term, Fold.Enrichment)
+head(temp_forrevigo)
+```
+
+Write out:
+```{r}
+write.csv(temp_forrevigo, "../analyses/tempdavid-for-revigo.csv", quote = FALSE, row.names = FALSE)
+```
+
+## infection degs:
+
+```{r}
+#load in david output from infection DEGs with transcriptome v. 1.5 as background:
+infection_david <- read.delim("../../project-crab/analyses/chart_12EFD.txt", sep = '\t')
+head(infection_david)
+```
+
+filter out term and fold enrichment:
+```{r}
+infection_forrevigo <- select(infection_david, Term, Fold.Enrichment)
+head(infection_forrevigo)
+```
+
+Write out:
+```{r}
+write.csv(infection_forrevigo, "../analyses/infectiondavid-for-revigo.csv", quote = FALSE, row.names = FALSE)
+```
+
+
