@@ -80,6 +80,13 @@ write.table(crabE17_goIDS, "../analyses/crabE17GOIDs.tab", sep = '\t', row.names
 ```
 
 
+### Notes
+for each of those .tab lists, I opened them in text edit, replaced the ';' with returns so i got a list of GO IDs in one column. Saved that file as (for example) crabE17_goIDs-col.txt
+
+I then used bash to get the counts for those GO ids:
+cat /Users/graciecrandall/Documents/GitHub/paper-crab/analyses/crabE2_goIDs-col.txt | sort | uniq -c | awk '{print $2, $1}' > crabE2newlist.txt 
+
+that new list is the GO ids on the left, with the ccounts on the right. Will put those lists into revigo and get the treemaps. 
 
 
 
