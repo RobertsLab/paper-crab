@@ -1,0 +1,2 @@
+Category	Term	Count	%	PValue	Genes	List Total	Pop Hits	Pop Total	Fold Enrichment	Bonferroni	Benjamini	FDR
+GOTERM_BP_DIRECT	GO:1990126~retrograde transport, endosome to plasma membrane	2	2.5316455696202533	0.01408594168412205	Q9ULJ7, Q96NW4	18	14	16792	133.26984126984127	0.7647205196152794	0.7647205196152794	14.618718765484761
