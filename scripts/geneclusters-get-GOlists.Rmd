@@ -44,6 +44,42 @@ write out
 write.table(crab17_goIDS, "../analyses/crab17GOIDs.tab", sep = '\t', row.names = FALSE, quote = FALSE)
 ```
 
+### Crab E at day 2:
+```{r}
+crabE2_go <- read.delim("../analyses/crabE2_clustgenes_GO.tab", sep = '\t')
+head(crabE2_go)
+```
+
+Print GO IDs:
+```{r}
+crabE2_goIDS <- crabE2_go$gene_ontology_IDs
+head(crabE2_goIDS)
+```
+
+write out
+```{r}
+write.table(crabE2_goIDS, "../analyses/crabE2GOIDs.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+```
+
+
+### Crab E at day 17:
+```{r}
+crabE17_go <- read.delim("../analyses/crabE17_clustgenes_GO.tab", sep = '\t')
+head(crabE17_go)
+```
+
+Print GO IDs:
+```{r}
+crabE17_goIDS <- crabE17_go$gene_ontology_IDs
+head(crabE17_goIDS)
+```
+
+write out
+```{r}
+write.table(crabE17_goIDS, "../analyses/crabE17GOIDs.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+```
+
+
 
 
 
