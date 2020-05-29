@@ -1,0 +1,30 @@
+---
+title: "heatmap-cluster-golists-for-revigo"
+output: html_document
+---
+Rmd to get list of GO terms from each annotated list of genes in the 4 clusters of the heatmap. Heatmap is infection degs in Crabs C and E at time 2 and 17. 
+
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+### Crab C at day 2:
+```{r}
+crabC2_go <- read.delim("../analyses/crabC2_clustgenes_GO.tab", sep = '\t')
+head(crabC2_go)
+```
+
+Print GO IDs:
+```{r}
+crab2_goIDS <- crabC2_go$gene_ontology_IDs
+head(crab2_goIDS)
+```
+
+write out
+```{r}
+write.table(crab2_goIDS, "../analyses/crab2GOIDs.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+```
+
+
