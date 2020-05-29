@@ -1,0 +1,62 @@
+---
+title: "annotate infection DEG list with blast and GO"
+output: html_document
+---
+Rmd to annotate the 772 infection DEGs with tnrascriptome v. 1.5 `blast` output and uniprot_SP_GO information. 
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+
+Read in infection DEG list (772):
+```{r}
+infection_degs <- read.delim("../analyses/DEG-infection.txt", header = TRUE)
+head(infection_degs)
+```
+
+Read in the uniprot-SP-GO.sorted file:
+```{r}
+uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_sp_GO)
+```
+
+Rename some columns: 
+```{r}
+colnames(uniprot_sp_GO) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_sp_GO)
+```
+
+Upload crab transcriptome BLAST output (from transcriptome v. 1.5)
+```{r}
+blastout <- read.delim("../../project-crab/analyses/BLAST_to_GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+head(blastout)
+```
+
+Rename one column so that this file can be `join`-ed with the uniprot-SP-Go:
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+
+`join` blastout and uniprot_sp_GO by "uniprot_acc_ID" column:
+```{r}
+blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
+head(blastout_uniprot)
+```
+
+
+`join` the annotated blast output file with degs by Trinity_ID:
+```{r}
+degs_annot <- left_join(infection_degs, blastout_uniprot, by = "Trinity_ID")
+head(degs_annot)
+```
+
+
+Write out annotated DEG list comparing infection status to paper-crab/analsyes:
+```{r}
+write.table(degs_annot, "../analyses/annot_infection-DEGlist.tab", quote = FALSE, row.names = FALSE, sep = '\t')
+```
+
+
