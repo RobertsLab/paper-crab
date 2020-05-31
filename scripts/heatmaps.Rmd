@@ -105,7 +105,7 @@ pheatmap(noz_tempdegs.heatmap, scale = "row", cluster_row = FALSE, cluster_cols 
 ## Create heatmap with infection DEG list
 Just using crabs D (uninfected) and E (infected) across time
 
-Read in Temperature DEG list (772)
+Read in infection DEG list (772)
 ```{r}
 infection_degs <- read.delim("../analyses/DEG-infection.txt", header = TRUE)
 head(infection_degs)
@@ -469,6 +469,59 @@ euc_clust <- sort(cutree(results$tree_row, h =7))
 head(euc_clust)
 ```
 I don't think that is helpful at all. The tree is too messy. 
+
+## Crabs GHI at day 2 with infection DEGs
+Pull out just the sample count data:
+```{r}
+infectiondegs_ghiday2 <- select(infectdegs_counts_match, Trinity_ID, CrabG_2, CrabH_2, CrabI_2)
+head(infectiondegs_ghiday2)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_ghiday2) <- infectiondegs_ghiday2$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_ghiday2.heatmap <-infectiondegs_ghiday2[,-1] #remove redundant column
+head(infectiondegs_ghiday2.heatmap)
+```
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_ghiday2.heatmap <- infectiondegs_ghiday2.heatmap[rowSums(infectiondegs_ghiday2.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_ghiday2.heatmap)
+```
+106 rows
+
+
+
+```{r}
+pheatmap(noz_infectiondegs_ghiday2.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
+
+### Crab C, E, and H at day 2:
+Pull out just the sample count data:
+```{r}
+infectiondegs_cehday2 <- select(infectdegs_counts_match, Trinity_ID, CrabC_2, CrabE_2, CrabH_2)
+head(infectiondegs_cehday2)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(infectiondegs_cehday2) <- infectiondegs_cehday2$Trinity_ID #set Trinity IDs as rownames
+infectiondegs_cehday2.heatmap <-infectiondegs_cehday2[,-1] #remove redundant column
+head(infectiondegs_cehday2.heatmap)
+```
+
+I think I should try to remove rows that have 0 all the way across:
+```{r}
+noz_infectiondegs_cehday2.heatmap <- infectiondegs_cehday2.heatmap[rowSums(infectiondegs_cehday2.heatmap[, -1] >0) !=0, ]
+head(noz_infectiondegs_cehday2.heatmap)
+```
+
+```{r}
+pheatmap(noz_infectiondegs_cehday2.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRedBlue, fontsize_col = 20, fontsize_row = 12)
+```
+
 
 # ABC v GHI at day 2 DEG list
 ## Create heatmap using ABC v GHI DEG list (5) on all samples:
