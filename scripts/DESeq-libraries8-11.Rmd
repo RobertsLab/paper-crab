@@ -1,0 +1,31 @@
+---
+title: "DESeq_libraries8-11"
+output: html_document
+---
+Rmd to go through `DESeq2` pipeline. Will check data. Then will perform some DEG analyses. 
+
+Libraries 8-11 info: 
+(These were used in the 02-DeSeq-Temperature.Rmd comparing elevated and decreased)     
+They are all pooled samples:   
+8 --> Day 2, infected, decreased temperature
+9 --> Day 2, uninfected, decreased temperature
+10 --> Day 2, infected, elevated temperature
+11 --> Day 2, uninfected, elevated temperature
+
+```{r}
+library(DESeq2)
+```
+
+Read in un-normalized counts:
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
