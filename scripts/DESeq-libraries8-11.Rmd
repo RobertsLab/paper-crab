@@ -102,6 +102,8 @@ abline(h=c(-1,1), col="blue")
 
 ## Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?
 
+
+In the multifactor section of the `DESeq2` manual: 
 ```{r}
 deseq2.resTemp <- results(deseq2.dds,
                           contrast = c("temperature", "elevated", "decreased"))
@@ -127,7 +129,9 @@ abline(h=c(-1,1), col="blue")
 dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 ```
 
-
+```{r}
+summary(deseq2.resTemp)
+```
 
 
 
