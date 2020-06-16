@@ -19,6 +19,7 @@ library(tidyverse)
 
 
 Read in un-normalized counts:
+FROM TRANSCRIPTOME V. 1.5
 ```{r}
 pooldf <- read.table("../data/kallisto-0517.isoform.counts.txt", header = T, sep = "\t")
 rownames(pooldf) <- pooldf$FeatureID
@@ -53,6 +54,9 @@ res <- res[order(rownames(res)), ]
 ```{r}
 head(res)
 ```
+Sometimes a subset of the p values in res will be NA (“not available”). This is DESeq's way of reporting that all counts for this gene were zero, and hence not test was applied. In addition, p values can be assigned NA if the gene was excluded from analysis because it contained an extreme count outlier. For more information, see the outlier detection section of the vignette.       
+(from https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFeb2015/B02.1.1_RNASeqLab.html#time)
+
 
 ```{r}
 # Count number of hits with adjusted p-value less then 0.05
@@ -186,6 +190,33 @@ dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 ```{r}
 summary(deseq2.resTemp)
 ```
+
+## Try similar thing to section above but with `name` argument of _results_
+```{r}
+deseq2.resTemp2 <- results(deseq2.dds,
+                          name = "temperature_elevated_vs_decreased")
+head(deseq2.resTemp2)
+```
+
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+dim(deseq2.resTemp2[!is.na(deseq2.resTemp2$padj) & deseq2.resTemp2$padj <= 0.05, ])
+```
+
+Exact same results as what I did in previous section. 
+
+
+```{r}
+?results
+```
+
+## Notes:
+From https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFeb2015/B02.1.1_RNASeqLab.html#de in section "multiple testing":     
+- apparently I should be using a padj of 0.1 cut-off instead of 0.05 
+
+
+
+
 
 ### Attempt at running interaction term from `DESeq2` manual
 Won't work. 

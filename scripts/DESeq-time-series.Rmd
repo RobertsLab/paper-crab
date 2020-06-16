@@ -3,7 +3,7 @@ title: "time-series"
 output: html_document
 ---
 Rmd for performing time-series analyses with the individual crab RNAseq data sets. 
-
+https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFeb2015/B02.1.1_RNASeqLab.html#time 
 
 ```{r}
 library(DESeq2)
@@ -12,7 +12,7 @@ library(pheatmap)
 ```
 
 ## Read in and prepare dataset: 
-
+FROM TRANSCRIPTOME V. 1.5
 Read in the isoform count matrix from the 2020 Genewiz individual crab RNAseq data (un-normalized!!):
 ```{r}
 indiv_counts <- read.delim("../data/individual_crab-salmon.isoform.counts.matrix")
@@ -49,7 +49,7 @@ So... not sure what to do.
 ## Time series analyses on some samples:
 I'm not going to do it on all samples at once. 
 
-I'll start with ABC vs GHI time points 0 and 2. 
+I'll start with ABC vs GHI time points 0 and 2. Kinda weird because at time 0 all samples are at ambient... but that's all I can do. 
 Subset those columns:
 ```{r}
 abcghi <- select(indiv_counts, CrabA_0, CrabB_0, CrabC_0, CrabA_2, CrabB_2, CrabC_2, CrabG_0, CrabH_0, CrabI_0, CrabG_2, CrabH_2, CrabI_2)
@@ -119,7 +119,7 @@ pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_m
 
 
 ## try new design 
-
+Doesn't work because there aren't enough replicates. 
 ```{r}
 #design(deseq2.dds) <- formula(~ temperature + day + temperature:day)
 #deseq2.dds <- DESeq(deseq2.dds)
@@ -195,6 +195,8 @@ betas <- coef(deseq2.dds)
 colnames(betas)
 ```
 
+
+Don't understand this next chunk of code... why are only two columns showing? 
 ```{r}
 mat <- betas[,-c(1,2)]
 mat[mat < -5] <- -5
