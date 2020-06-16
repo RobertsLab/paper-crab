@@ -1,0 +1,207 @@
+---
+title: "time-series"
+output: html_document
+---
+Rmd for performing time-series analyses with the individual crab RNAseq data sets. 
+
+
+```{r}
+library(DESeq2)
+library(tidyverse)
+library(pheatmap)
+```
+
+## Read in and prepare dataset: 
+
+Read in the isoform count matrix from the 2020 Genewiz individual crab RNAseq data (un-normalized!!):
+```{r}
+indiv_counts <- read.delim("../data/individual_crab-salmon.isoform.counts.matrix")
+head(indiv_counts)
+```
+
+Rename columns:
+Crab Letter (A-I based on table in paper) and sample day. Table in paper will tell infection status of the crabs. 
+```{r}
+colnames(indiv_counts) <- c("X", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(indiv_counts)
+```
+
+Make Column X (Trinity IDs) row names:
+```{r}
+rownames(indiv_counts) <- indiv_counts$X
+indiv_counts <- indiv_counts[,-1]
+head(indiv_counts)
+```
+
+
+Round counts up to integers!!!
+```{r}
+indiv_counts <- round(indiv_counts,0)
+head(indiv_counts)
+```
+
+## Filter out bad samples:
+
+`DESeq2` manual does say you can filter out genes with low counts... says it isn't necessary though. 
+
+So... not sure what to do. 
+
+## Time series analyses on some samples:
+I'm not going to do it on all samples at once. 
+
+I'll start with ABC vs GHI time points 0 and 2. 
+Subset those columns:
+```{r}
+abcghi <- select(indiv_counts, CrabA_0, CrabB_0, CrabC_0, CrabA_2, CrabB_2, CrabC_2, CrabG_0, CrabH_0, CrabI_0, CrabG_2, CrabH_2, CrabI_2)
+head(abcghi)
+```
+
+```{r}
+deseq2.colData <- data.frame(temperature=factor(c(rep("ambient", 6), rep("elevated", 6))), 
+                             day=factor(c(rep("day0", 3), rep("day2", 3), rep("day0", 3), rep("day2", 3))))
+rownames(deseq2.colData) <- colnames(abcghi)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = abcghi,
+                                     colData = deseq2.colData, 
+                                     design = ~ temperature + day + temperature:day)
+```
+
+Check levels of temperature and day:
+```{r}
+levels(deseq2.dds$temperature)
+```
+
+```{r}
+levels(deseq2.dds$day)
+```
+
+
+
+The following chunk performs a likelihood ratio test where we remove the strain-specific differences over time. Genes with small _p_ alues from this test are those which, at one or more time points after time 0, showed a strain-specific effect. Note therefore that this will note give small _p_ values to genes which moved or down over time in the same way in both strains. 
+
+```{r}
+deseq2.dds <- DESeq(deseq2.dds, test = "LRT", reduced = ~ temperature + day)
+deseq2.res <- results(deseq2.dds)
+deseq2.res$symbol <- mcols(deseq2.dds)$symbol
+head(deseq2.res[order(deseq2.res$pvalue),],4)
+```
+
+```{r}
+data <- plotCounts(deseq2.dds, which.min(deseq2.res$pvalue),
+                   intgroup = c("day","temperature"), returnData = TRUE)
+ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
+  geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
+```
+
+```{r}
+resultsNames(deseq2.dds)
+```
+
+```{r}
+res2 <- results(deseq2.dds, name = "temperatureelevated.dayday2", test = "Wald")
+res2[which.min(deseq2.res$pvalue),]
+```
+
+```{r}
+betas <- coef(deseq2.dds)
+colnames(betas)
+```
+
+```{r}
+mat <- betas[,-c(1,2)]
+mat[mat < -5] <- -5
+mat[mat > 5] <- 5
+topGenes <- head(order(deseq2.res$pvalue),10)
+colors <- RColorBrewer::brewer.pal(11, "PuOr")
+pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
+```
+
+
+
+
+## try new design 
+
+```{r}
+#design(deseq2.dds) <- formula(~ temperature + day + temperature:day)
+#deseq2.dds <- DESeq(deseq2.dds)
+```
+
+
+Access results:
+```{r}
+#deseq2.res <- results(deseq2.dds)
+#head(deseq2.res)
+```
+
+```{r}
+#summary(deseq2.res)
+```
+
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+#dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
+```
+
+```{r}
+#indcrabs <- deseq2.res
+# The main plot
+#plot(indcrabs$baseMean, indcrabs$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
+     #main="Infection Status  (pval </= 0.05)",
+#     xlab="mean of normalized counts",
+#     ylab="Log2 Fold Change")
+# Getting the significant points and plotting them again so they're a different color
+#indcrabs.sig <- deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ]
+#points(indcrabs.sig$baseMean, indcrabs.sig$log2FoldChange, pch=20, cex=0.45, col="red")
+# 2 FC lines
+#abline(h=c(-1,1), col="blue")
+```
+
+
+## Try all again, but with different individual samples: 
+
+I'll go with A vs E time points 0 and 2 and 17. 
+Subset those columns:
+```{r}
+ave <- select(indiv_counts, CrabA_0, CrabA_2, CrabA_17, CrabE_0, CrabE_2, CrabE_17)
+head(ave)
+```
+
+
+```{r}
+colData <- data.frame(temperature=factor(c(rep("ambient", 3), rep("decreased", 3))), 
+                             day=factor(c("day0", "day02", "day17", "day0", "day02", "day17")))
+rownames(colData) <- colnames(ave)
+deseq2.dds <- DESeqDataSetFromMatrix(countData = ave,
+                                     colData = colData, 
+                                     design = ~ temperature + day)
+```
+
+```{r}
+deseq2.dds <- DESeq(deseq2.dds)
+deseq2.res <- results(deseq2.dds)
+deseq2.res$symbol <- mcols(deseq2.dds)$symbol
+head(deseq2.res[order(deseq2.res$pvalue),],4)
+```
+
+
+```{r}
+data <- plotCounts(deseq2.dds, which.min(deseq2.res$pvalue),
+                   intgroup = c("day","temperature"), returnData = TRUE)
+ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
+  geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
+```
+
+```{r}
+betas <- coef(deseq2.dds)
+colnames(betas)
+```
+
+```{r}
+mat <- betas[,-c(1,2)]
+mat[mat < -5] <- -5
+mat[mat > 5] <- 5
+topGenes <- head(order(deseq2.res$pvalue),10)
+colors <- RColorBrewer::brewer.pal(11, "PuOr")
+pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
+```
+
+
