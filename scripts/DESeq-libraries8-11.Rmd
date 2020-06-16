@@ -14,8 +14,6 @@ They are all pooled samples:
 
 ```{r}
 library(DESeq2)
-```
-```{r}
 library(tidyverse)
 ```
 
@@ -35,25 +33,53 @@ head(pooldf)
 ```
 
 
-## Get DEGs based on infection comparison:
+## Get DEGs based on infection with temperature as a factor: 
+From Multi-factor designs section of: 
+http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs 
+
 ```{r}
 deseq2.colData <- data.frame(condition=factor(c("uninfected", "infected", "uninfected", "infected")), 
-                             type=factor(rep("paired-end", 4)))
+                             type=factor(rep("paired-end", 4)),
+                             temperature=factor(c("decreased", "decreased", "elevated", "elevated")))
 rownames(deseq2.colData) <- colnames(data)
 deseq2.dds <- DESeqDataSetFromMatrix(countData = pooldf,
                                      colData = deseq2.colData, 
-                                     design = ~ condition)
+                                     design = ~ condition + temperature)
+```
+
+Check levels of temperature and condition (infection status)
+```{r}
+levels(deseq2.dds$temperature)
 ```
 
 ```{r}
+levels(deseq2.dds$condition)
+```
+
+`DESeq2` automatically puts the levels in alphabetical order and the first listed level is the reference level for the factor. 
+
+We want uninfected to be the reference. 
+```{r}
+deseq2.dds$condition = relevel(deseq2.dds$condition, "uninfected")
+levels(deseq2.dds$condition)
+```
+
+Cool. 
+```{r}
+design(deseq2.dds) <- formula(~ temperature + condition)
 deseq2.dds <- DESeq(deseq2.dds)
-deseq2.res <- results(deseq2.dds)
-deseq2.res <- deseq2.res[order(rownames(deseq2.res)), ]
 ```
 
+Access results:
 ```{r}
+deseq2.res <- results(deseq2.dds)
 head(deseq2.res)
 ```
+
+```{r}
+summary(deseq2.res)
+```
+
 
 ```{r}
 # Count number of hits with adjusted p-value less then 0.05
@@ -74,57 +100,42 @@ points(inf.sig$baseMean, inf.sig$log2FoldChange, pch=20, cex=0.45, col="red")
 abline(h=c(-1,1), col="blue")
 ```
 
-
-## Get DEGs based on infection with temperature as a factor: 
-From Multi-factor designs section of: 
-http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs 
+## Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?
 
 ```{r}
-deseq2.colData2 <- data.frame(condition=factor(c("uninfected", "infected", "uninfected", "infected")), 
-                             type=factor(rep("paired-end", 4)),
-                             temperature=factor(c("decreased", "decreased", "elevated", "elevated")))
-rownames(deseq2.colData2) <- colnames(data)
-deseq2.dds2 <- DESeqDataSetFromMatrix(countData = pooldf,
-                                     colData = deseq2.colData2, 
-                                     design = ~ condition + temperature + condition:temperature)
-```
-
-
-```{r}
-levels(deseq2.dds2$temperature)
-```
-
-
-```{r}
-design(deseq2.dds2) <- formula(~ temperature + condition)
-deseq2.dds2 <- DESeq(deseq2.dds2)
-
-```
-
-Access results:
-```{r}
-results.dds2 <- results(deseq2.dds2)
-head(results.dds2)
+deseq2.resTemp <- results(deseq2.dds,
+                          contrast = c("temperature", "elevated", "decreased"))
+head(deseq2.resTemp)
 ```
 
 ```{r}
-# Count number of hits with adjusted p-value less then 0.05
-dim(results.dds2[!is.na(results.dds2$padj) & results.dds2$padj <= 0.05, ])
-```
-
-```{r}
-inf2 <- results.dds2
+tmp <- deseq2.resTemp
 # The main plot
-plot(inf2$baseMean, inf2$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
+plot(tmp$baseMean, tmp$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
      #main="Infection Status  (pval </= 0.05)",
      xlab="mean of normalized counts",
      ylab="Log2 Fold Change")
 # Getting the significant points and plotting them again so they're a different color
-inf2.sig <- results.dds2[!is.na(results.dds2$padj) & results.dds2$padj <= 0.05, ]
-points(inf2.sig$baseMean, inf2.sig$log2FoldChange, pch=20, cex=0.45, col="red")
+tmp.sig <- deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ]
+points(tmp.sig$baseMean, tmp.sig$log2FoldChange, pch=20, cex=0.45, col="red")
 # 2 FC lines
 abline(h=c(-1,1), col="blue")
 ```
+
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
