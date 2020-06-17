@@ -251,13 +251,35 @@ write.table(inftempdegs_counts_match, "../analyses/DEGlist-inf-temp-libs8-11_cou
 ```
 
 
+### `join` count data with list of 130
 
+Read in DEGlist of 130 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID": 
+```{r}
+degs_contasttemp <-  read.delim("../analyses/DEGlist-contrast_temp-libs8-11.txt", sep = '\t')
+```
+130 rows - excellent
 
+`join` based on Trinity ID
+```{r}
+deg_contrasttemp_counts <- left_join(data, degs_contasttemp, by = "Trinity_ID")
+head(deg_contrasttemp_counts)
+```
 
+Only want the ones that match!
+```{r}
+contrtempdegs_counts_match <- filter(deg_contrasttemp_counts, baseMean != "NA")
+head(contrtempdegs_counts_match)
+```
+130 rows 
 
+Values in that list with large positive log2 fold changes only have counts in warm samples
 
+values in that list with small negative log2 fold changes only have counts in cold samples
 
-
+Write out list with count data:
+```{r}
+write.table(contrtempdegs_counts_match, "../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
 
 
 
