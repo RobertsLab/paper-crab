@@ -82,7 +82,8 @@ abline(h=c(-1,1), col="blue")
 
 
 ## Get DEGs based on infection with temperature as part of the design: 
-From Multi-factor designs section of: 
+Taking temperature exposure into account!!      
+From Multi-factor designs section of:       
 http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs 
 
 ```{r}
@@ -150,11 +151,16 @@ points(inf.sig$baseMean, inf.sig$log2FoldChange, pch=20, cex=0.45, col="red")
 abline(h=c(-1,1), col="blue")
 ```
 
+```{r}
+write.table(deseq2.res, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+```
+
+
 ## Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?
 
 
 In the multifactor section of the `DESeq2` manual: 
-The contrast argument of the function _results_ needs a character vector of three componenets: the name of the variable (in this case "temperature"), and the name of the factor level for the numerator of the log2 ratio (elevated) and the denomonator (decreased) 
+The contrast argument of the function _results_ needs a character vector of three componenets: the name of the variable (in this case "temperature"), and the name of the factor level for the numerator of the log2 ratio (elevated) and the denominator (decreased) 
 
 A contrast is a linear combination of estimated log2 fold changes. Can be used to test if differences between groups are equal to zero. 
 ```{r}
@@ -191,46 +197,21 @@ dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 summary(deseq2.resTemp)
 ```
 
-## Try similar thing to section above but with `name` argument of _results_
 ```{r}
-deseq2.resTemp2 <- results(deseq2.dds,
-                          name = "temperature_elevated_vs_decreased")
-head(deseq2.resTemp2)
+write.table(deseq2.resTemp, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 
-```{r}
-# Count number of hits with adjusted p-value less then 0.05
-dim(deseq2.resTemp2[!is.na(deseq2.resTemp2$padj) & deseq2.resTemp2$padj <= 0.05, ])
-```
-
-Exact same results as what I did in previous section. 
-
-
-```{r}
-?results
-```
 
 ## Notes:
 From https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFeb2015/B02.1.1_RNASeqLab.html#de in section "multiple testing":     
-- apparently I should be using a padj of 0.1 cut-off instead of 0.05 
+- apparently I should be using a padj of 0.1 cut-off instead of 0.05 ..???
 
 
+**DEGs (183) based on infection taking temperature into account amd DEGs (130) just between elevated and decreased temperature treatments are the results.** 
 
+## After chat with SR --> `join` count data with list of 183 AND 130 genes to see what makes sense. 
 
-
-### Attempt at running interaction term from `DESeq2` manual
-Won't work. 
-```{r}
-#deseq2.dds$group <- factor(paste0(deseq2.dds$temperature, deseq2.dds$condition))
-#design(deseq2.dds) <- ~ group
-#deseq2.dds <- DESeq(deseq2.dds)
-#resultsNames(deseq2.dds)
-#results(deseq2.dds, contrast = c("group", "infecteddecrased", "infectedelevated"))
-```
-Error in checkForExperimentalReplicates(object, modelMatrix) : The design matrix has the same number of samples and coefficients to fit, so estimation of dispersion is not possible. Treating samples as replicates was deprecated in v1.20 and no longer supported since v1.22.
-
-
-
+### `join` count data with list of 183
 
 
 
