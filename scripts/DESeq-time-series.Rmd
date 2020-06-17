@@ -56,22 +56,23 @@ abcghi <- select(indiv_counts, CrabA_0, CrabB_0, CrabC_0, CrabA_2, CrabB_2, Crab
 head(abcghi)
 ```
 
+
 ```{r}
-deseq2.colData <- data.frame(temperature=factor(c(rep("ambient", 6), rep("elevated", 6))), 
+abcghi.colData <- data.frame(temperature=factor(c(rep("ambient", 6), rep("elevated", 6))), 
                              day=factor(c(rep("day0", 3), rep("day2", 3), rep("day0", 3), rep("day2", 3))))
-rownames(deseq2.colData) <- colnames(abcghi)
-deseq2.dds <- DESeqDataSetFromMatrix(countData = abcghi,
-                                     colData = deseq2.colData, 
+rownames(abcghi.colData) <- colnames(abcghi)
+abcghi.dds <- DESeqDataSetFromMatrix(countData = abcghi,
+                                     colData = abcghi.colData, 
                                      design = ~ temperature + day + temperature:day)
 ```
 
 Check levels of temperature and day:
 ```{r}
-levels(deseq2.dds$temperature)
+levels(abcghi.dds$temperature)
 ```
 
 ```{r}
-levels(deseq2.dds$day)
+levels(abcghi.dds$day)
 ```
 
 
@@ -79,30 +80,30 @@ levels(deseq2.dds$day)
 The following chunk performs a likelihood ratio test where we remove the strain-specific differences over time. Genes with small _p_ alues from this test are those which, at one or more time points after time 0, showed a strain-specific effect. Note therefore that this will note give small _p_ values to genes which moved or down over time in the same way in both strains. 
 
 ```{r}
-deseq2.dds <- DESeq(deseq2.dds, test = "LRT", reduced = ~ temperature + day)
-deseq2.res <- results(deseq2.dds)
-deseq2.res$symbol <- mcols(deseq2.dds)$symbol
-head(deseq2.res[order(deseq2.res$pvalue),],4)
+abcghi.dds <- DESeq(abcghi.dds, test = "LRT", reduced = ~ temperature + day)
+abcghi.res <- results(abcghi.dds)
+abcghi.res$symbol <- mcols(abcghi.dds)$symbol
+head(abcghi.res[order(abcghi.res$pvalue),],4)
 ```
 
 ```{r}
-data <- plotCounts(deseq2.dds, which.min(deseq2.res$pvalue),
+data <- plotCounts(abcghi.dds, which.min(abcghi.res$pvalue),
                    intgroup = c("day","temperature"), returnData = TRUE)
 ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
   geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
 ```
 
 ```{r}
-resultsNames(deseq2.dds)
+resultsNames(abcghi.dds)
 ```
 
 ```{r}
-res2 <- results(deseq2.dds, name = "temperatureelevated.dayday2", test = "Wald")
-res2[which.min(deseq2.res$pvalue),]
+res2 <- results(abcghi.dds, name = "temperatureelevated.dayday2", test = "Wald")
+res2[which.min(abcghi.res$pvalue),]
 ```
 
 ```{r}
-betas <- coef(deseq2.dds)
+betas <- coef(abcghi.dds)
 colnames(betas)
 ```
 
@@ -110,7 +111,7 @@ colnames(betas)
 mat <- betas[,-c(1,2)]
 mat[mat < -5] <- -5
 mat[mat > 5] <- 5
-topGenes <- head(order(deseq2.res$pvalue),10)
+topGenes <- head(order(abcghi.res$pvalue),10)
 colors <- RColorBrewer::brewer.pal(11, "PuOr")
 pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
 ```
@@ -167,41 +168,41 @@ head(ave)
 
 
 ```{r}
-colData <- data.frame(temperature=factor(c(rep("ambient", 3), rep("decreased", 3))), 
+ave.colData <- data.frame(temperature=factor(c(rep("ambient", 3), rep("decreased", 3))), 
                              day=factor(c("day0", "day02", "day17", "day0", "day02", "day17")))
-rownames(colData) <- colnames(ave)
-deseq2.dds <- DESeqDataSetFromMatrix(countData = ave,
-                                     colData = colData, 
+rownames(ave.colData) <- colnames(ave)
+ave.dds <- DESeqDataSetFromMatrix(countData = ave,
+                                     colData = ave.colData, 
                                      design = ~ temperature + day)
 ```
 
 ```{r}
-deseq2.dds <- DESeq(deseq2.dds)
-deseq2.res <- results(deseq2.dds)
-deseq2.res$symbol <- mcols(deseq2.dds)$symbol
-head(deseq2.res[order(deseq2.res$pvalue),],4)
+ave.dds <- DESeq(ave.dds)
+ave.res <- results(ave.dds)
+ave.res$symbol <- mcols(ave.dds)$symbol
+head(ave.res[order(ave.res$pvalue),],4)
 ```
 
 
 ```{r}
-data <- plotCounts(deseq2.dds, which.min(deseq2.res$pvalue),
+data <- plotCounts(ave.dds, which.min(ave.res$pvalue),
                    intgroup = c("day","temperature"), returnData = TRUE)
 ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
   geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
 ```
 
 ```{r}
-betas <- coef(deseq2.dds)
-colnames(betas)
+ave.betas <- coef(ave.dds)
+colnames(ave.betas)
 ```
 
 
 Don't understand this next chunk of code... why are only two columns showing? 
 ```{r}
-mat <- betas[,-c(1,2)]
+mat <- ave.betas[,-c(1,2)]
 mat[mat < -5] <- -5
 mat[mat > 5] <- 5
-topGenes <- head(order(deseq2.res$pvalue),10)
+topGenes <- head(order(ave.res$pvalue),10)
 colors <- RColorBrewer::brewer.pal(11, "PuOr")
 pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
 ```
