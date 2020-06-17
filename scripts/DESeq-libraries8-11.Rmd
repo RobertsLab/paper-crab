@@ -152,7 +152,7 @@ abline(h=c(-1,1), col="blue")
 ```
 
 ```{r}
-write.table(deseq2.res, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+write.table(inf.sig, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 
 
@@ -198,7 +198,7 @@ summary(deseq2.resTemp)
 ```
 
 ```{r}
-write.table(deseq2.resTemp, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+write.table(tmp.sig, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 
 
@@ -213,8 +213,12 @@ From https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFe
 
 ### `join` count data with list of 183
 
+Read in DEGlist of 183: 
+```{r}
+deglist_inftemp <- read.delim("../analyses/DEGlist-infection_temp-libs8-11.tab", sep = '\t')
+```
 
-
+uh... there's 40,435 rows... that's not right. 
 
 
 
