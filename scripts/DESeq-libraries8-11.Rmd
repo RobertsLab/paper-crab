@@ -371,4 +371,39 @@ contrasttemp.clust <- cbind(noz_contrtempdegs_counts_match.heatmap,
 head(contrasttemp.clust)
 ```
 
+## `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
+
+### List of 130
+Set Trinity IDs as a column called "Trinity_ID":
+```{r}
+inftemp.res.clusts4 <- contrasttemp.clust
+Trinity_ID <- rownames(inftemp.res.clusts4)
+rownames(inftemp.res.clusts4) <- NULL
+final_inftemp.res.clusts4 <- cbind(Trinity_ID, inftemp.res.clusts4)
+head(final_inftemp.res.clusts4)
+```
+
+Make rownames of contrtempdegs_counts_match.heatmap as column called "Trinity_ID"
+```{r}
+contrast_temp.res <- contrtempdegs_counts_match.heatmap
+Trinity_ID <- rownames(contrast_temp.res)
+rownames(contrast_temp.res) <- NULL
+final_contrast_temp.res <- cbind(Trinity_ID, contrast_temp.res)
+head(final_contrast_temp.res)
+```
+
+
+
+`join` with contrtempdegs_counts_match.heatmap 
+```{r}
+inftemp.clust.degs <- left_join(final_inftemp.res.clusts4, final_contrast_temp.res, by = "Trinity_ID")
+head(inftemp.clust.degs)
+```
+
+
+
+
+
+
+
 
