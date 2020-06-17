@@ -213,12 +213,49 @@ From https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFe
 
 ### `join` count data with list of 183
 
-Read in DEGlist of 183: 
+Read in DEGlist of 183 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID": 
 ```{r}
-deglist_inftemp <- read.delim("../analyses/DEGlist-infection_temp-libs8-11.tab", sep = '\t')
+deglist_inftemp <- read.delim("../analyses/DEGlist-infection_temp-libs8-11.txt", sep = '\t')
+```
+183 rows --> good to go. 
+
+Make row names of pooldf Trinity IDs into a column called "Trinity_ID":
+```{r}
+#make Trinity IDs into a column in tmdf
+df <- pooldf
+names <- rownames(pooldf)
+rownames(df) <- NULL
+data <- cbind(names, df)
+
+#rename column 1 in tmdf
+colnames(data) <- c("Trinity_ID", "uninfected_cold", "infected_cold", "uninfected_warm", "infected_warm")
+head(data)
 ```
 
-uh... there's 40,435 rows... that's not right. 
+`join` based on Trinity ID
+```{r}
+degs_inftemp_counts <- left_join(data, deglist_inftemp, by = "Trinity_ID")
+head(degs_inftemp_counts)
+```
+
+Only want the ones that match!
+```{r}
+inftempdegs_counts_match <- filter(degs_inftemp_counts, baseMean != "NA")
+head(inftempdegs_counts_match)
+```
+183 rows. 
+
+Write out list with count data:
+```{r}
+write.table(inftempdegs_counts_match, "../analyses/DEGlist-inf-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
+
+
+
+
+
+
 
 
 
