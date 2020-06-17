@@ -378,6 +378,37 @@ head(contrasttemp.clust)
 
 ### `join` the transcriptome v. 1.5 `blast` output with GO annotations: 
 
+upload `blast` output from transcriptome v. 1.5
+```{r}
+blastout <- read.delim("../../project-crab/analyses/BLAST_to_GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+head(blastout)
+```
+Rename some columns so that this file can be `join`-ed with the uniprot-SP-Go:
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+Read in the uniprot-SP-GO.sorted file:
+```{r}
+uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_sp_GO)
+```
+
+Rename some columns: 
+```{r}
+colnames(uniprot_sp_GO) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_sp_GO)
+```
+
+`join` blastout and uniprot_sp_GO by "uniprot_acc_ID" column:
+```{r}
+blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
+head(blastout_uniprot)
+```
+
+
+
+
 ### List of 183
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
@@ -400,7 +431,11 @@ inftemp.clust.degs <- left_join(inftempdegs_counts_match, inftemp.trinID.clust, 
 head(inftemp.clust.degs)
 ```
 
-
+`join` with uniprot-GO-blastout: 
+```{r}
+annot_inftemp.clust.degs <- left_join(inftemp.clust.degs, blastout_uniprot, by = "Trinity_ID")
+head(annot_inftemp.clust.degs)
+```
 
 ### List of 130
 Set Trinity IDs as a column called "Trinity_ID":
@@ -425,7 +460,11 @@ contrtemp.clust.degs <- left_join(contrtempdegs_counts_match, contrtemp.trinID.c
 head(contrtemp.clust.degs)
 ```
 
-
+`join` with uniprot-GO-blastout: 
+```{r}
+annot_contrtemp.clust.degs <- left_join(contrtemp.clust.degs, blastout_uniprot, by = "Trinity_ID")
+head(annot_contrtemp.clust.degs)
+```
 
 
 
