@@ -15,6 +15,8 @@ They are all pooled samples:
 ```{r}
 library(DESeq2)
 library(tidyverse)
+library(pheatmap)
+library(RColorBrewer)
 ```
 
 
@@ -279,6 +281,62 @@ values in that list with small negative log2 fold changes only have counts in co
 Write out list with count data:
 ```{r}
 write.table(contrtempdegs_counts_match, "../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
+## Make heatmaps of the two lists of count datas
+
+### Heatmap of counts from 183 list (infection comparison taking temperature into account)
+
+Set Trinity_ID as row names:
+```{r}
+rownames(inftempdegs_counts_match) <- inftempdegs_counts_match$Trinity_ID #set Trinity IDs as rownames
+inftempdegs_counts_match.heatmap <- inftempdegs_counts_match[,-1] #remove redundant column
+head(inftempdegs_counts_match.heatmap)
+```
+
+Pull out just the sample count data:
+```{r}
+inftempdegs_counts_match.heatmap <- select(inftempdegs_counts_match.heatmap, uninfected_cold, infected_cold, uninfected_warm, infected_warm)
+head(inftempdegs_counts_match.heatmap)
+```
+
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_inftempdegs_counts_match.heatmap <- inftempdegs_counts_match.heatmap[rowSums(inftempdegs_counts_match.heatmap[, -1] >0) !=0, ]
+head(noz_inftempdegs_counts_match.heatmap)
+```
+
+```{r}
+heatmapcolors <- RColorBrewer::brewer.pal(11, "BrBG")
+```
+
+```{r}
+pheatmap(noz_inftempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapcolors, fontsize_col = 20, fontsize_row = 12)
+```
+
+### Heatmap of counts from 130 list (contrast of temperatures from infection comparison taking temperature into account)
+
+Set Trinity_ID as row names:
+```{r}
+rownames(contrtempdegs_counts_match) <- contrtempdegs_counts_match$Trinity_ID #set Trinity IDs as rownames
+contrtempdegs_counts_match.heatmap <- contrtempdegs_counts_match[,-1] #remove redundant column
+head(contrtempdegs_counts_match.heatmap)
+```
+
+Pull out just the sample count data:
+```{r}
+contrtempdegs_counts_match.heatmap <- select(contrtempdegs_counts_match.heatmap, uninfected_cold, infected_cold, uninfected_warm, infected_warm)
+head(contrtempdegs_counts_match.heatmap)
+```
+
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_contrtempdegs_counts_match.heatmap <- contrtempdegs_counts_match.heatmap[rowSums(contrtempdegs_counts_match.heatmap[, -1] >0) !=0, ]
+head(noz_contrtempdegs_counts_match.heatmap)
+```
+
+```{r}
+pheatmap(noz_contrtempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 20, fontsize_row = 12)
 ```
 
 
