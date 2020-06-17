@@ -84,7 +84,7 @@ So, without taking temperature into account, there are 428 DEGs between the infe
 
 
 
-## Get DEGs based on infection with temperature as part of the design: 
+# Get DEGs based on infection with temperature as part of the design: 
 Taking temperature exposure into account!!      
 From Multi-factor designs section of:       
 http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs 
@@ -159,7 +159,7 @@ abline(h=c(-1,1), col="blue")
 ```
 Already wrote out, so I'm commenting above script out. 
 
-## Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?
+# Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?
 
 
 In the multifactor section of the `DESeq2` manual: 
@@ -212,9 +212,9 @@ From https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFe
 
 **DEGs (183) based on infection taking temperature into account amd DEGs (130) just between elevated and decreased temperature treatments are the results.** 
 
-## After chat with SR --> `join` count data with list of 183 AND 130 genes to see what makes sense. 
+# After chat with SR --> `join` count data with list of 183 AND 130 genes to see what makes sense. 
 
-### `join` count data with list of 183
+## `join` count data with list of 183
 
 Read in DEGlist of 183 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID": 
 ```{r}
@@ -254,7 +254,7 @@ Write out list with count data:
 ```
 already wrote out - comment out script
 
-### `join` count data with list of 130
+## `join` count data with list of 130
 
 Read in DEGlist of 130 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID": 
 ```{r}
@@ -286,9 +286,9 @@ Write out list with count data:
 already wrote out - comment out script
 
 
-## Make heatmaps of the two lists of count datas
+# Make heatmaps of the two lists of count datas
 
-### Heatmap of counts from 183 list (infection comparison taking temperature into account)
+## Heatmap of counts from 183 list (infection comparison taking temperature into account)
 
 Set Trinity_ID as row names:
 ```{r}
@@ -317,7 +317,7 @@ heatmapPurpleOrange <- RColorBrewer::brewer.pal(11, "PuOr")
 pheatmap(noz_inftempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
 
-### Heatmap of counts from 130 list (contrast of temperatures from infection comparison taking temperature into account)
+## Heatmap of counts from 130 list (contrast of temperatures from infection comparison taking temperature into account)
 
 Set Trinity_ID as row names:
 ```{r}
@@ -342,9 +342,9 @@ head(noz_contrtempdegs_counts_match.heatmap)
 pheatmap(noz_contrtempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
 
-## Get the genes that correspond with the clusters (the purple ones --> higher expression)
+# Get the genes that correspond with the clusters (the purple ones --> higher expression)
 
-### Gene clusters from heatmap comparing infection status taking temperature into account (first heatmap)
+## Gene clusters from heatmap comparing infection status taking temperature into account (first heatmap)
 
 Set the heatmap as an object called 'results':
 ```{r}
@@ -359,7 +359,7 @@ inftemp.clust <- cbind(noz_inftempdegs_counts_match.heatmap,
 head(inftemp.clust)
 ```
 
-### Gene clusters from heatmap contrasting temperatures from the comparison infection status taking temperature into account (second heatmap)
+## Gene clusters from heatmap contrasting temperatures from the comparison infection status taking temperature into account (second heatmap)
 
 Set the heatmap as an object called 'results2':
 ```{r}
@@ -374,9 +374,9 @@ contrasttemp.clust <- cbind(noz_contrtempdegs_counts_match.heatmap,
 head(contrasttemp.clust)
 ```
 
-## `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
+# `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
 
-### `join` the transcriptome v. 1.5 `blast` output with GO annotations: 
+## `join` the transcriptome v. 1.5 `blast` output with GO annotations: 
 
 upload `blast` output from transcriptome v. 1.5
 ```{r}
@@ -409,7 +409,7 @@ head(blastout_uniprot)
 
 
 
-### List of 183
+## List of 183
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
 inftemp.res.clusts4 <- inftemp.clust
@@ -437,7 +437,7 @@ annot_inftemp.clust.degs <- left_join(inftemp.clust.degs, blastout_uniprot, by =
 head(annot_inftemp.clust.degs)
 ```
 
-### List of 130
+## List of 130
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
 contrtemp.res.clusts4 <- contrasttemp.clust
