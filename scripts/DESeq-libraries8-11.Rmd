@@ -165,7 +165,7 @@ Already wrote out, so I'm commenting above script out.
 In the multifactor section of the `DESeq2` manual: 
 The contrast argument of the function _results_ needs a character vector of three componenets: the name of the variable (in this case "temperature"), and the name of the factor level for the numerator of the log2 ratio (elevated) and the denominator (decreased) 
 
-A contrast is a linear combination of estimated log2 fold changes. Can be used to test if differences between groups are equal to zero. 
+A **contrast** is a linear combination of estimated log2 fold changes. Can be used to test if differences between groups are equal to zero. 
 ```{r}
 resultsNames(deseq2.dds)
 ```
@@ -379,7 +379,26 @@ head(contrasttemp.clust)
 ### `join` the transcriptome v. 1.5 `blast` output with GO annotations: 
 
 ### List of 183
+Set Trinity IDs as a column called "Trinity_ID":
+```{r}
+inftemp.res.clusts4 <- inftemp.clust
+Trinity_ID <- rownames(inftemp.res.clusts4)
+rownames(inftemp.res.clusts4) <- NULL
+final_inftemp.res.clusts4 <- cbind(Trinity_ID, inftemp.res.clusts4)
+head(final_inftemp.res.clusts4)
+```
 
+Subset the columns Trinity_ID and cluster:
+```{r}
+inftemp.trinID.clust <- select(final_inftemp.res.clusts4, "Trinity_ID", "cluster")
+head(inftemp.trinID.clust)
+```
+
+`join` with contrtempdegs_counts_match
+```{r}
+inftemp.clust.degs <- left_join(inftempdegs_counts_match, inftemp.trinID.clust, by = "Trinity_ID")
+head(inftemp.clust.degs)
+```
 
 
 
@@ -400,20 +419,9 @@ head(contrtemp.trinID.clust)
 ```
 
 
-
-Make rownames of contrtempdegs_counts_match.heatmap as column called "Trinity_ID"
+`join` with contrtempdegs_counts_match
 ```{r}
-contrast_temp.res <- contrtempdegs_counts_match.heatmap
-Trinity_ID <- rownames(contrast_temp.res)
-rownames(contrast_temp.res) <- NULL
-final_contrast_temp.res <- cbind(Trinity_ID, contrast_temp.res)
-head(final_contrast_temp.res)
-```
-
-
-`join` with contrtempdegs_counts_match.heatmap 
-```{r}
-contrtemp.clust.degs <- left_join(final_contrast_temp.res, contrtemp.trinID.clust, by = "Trinity_ID")
+contrtemp.clust.degs <- left_join(contrtempdegs_counts_match, contrtemp.trinID.clust, by = "Trinity_ID")
 head(contrtemp.clust.degs)
 ```
 
