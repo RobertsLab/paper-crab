@@ -116,12 +116,65 @@ write.table(abcghi.res.sig, "../analyses/DEGlist-abcghi-daytemp.tab", sep = '\t'
 ```
 
 
-`join` with count data to make a heatmap:
+## `join` with count data to make a heatmap:
+read in .txt version
+```{r}
+daytemp_degs <- read.delim("../analyses/DEGlist-abcghi-daytemp.txt", sep = '\t')
+head(daytemp_degs)
+```
+
+Make row names of abcghi Trinity IDs into a column called "Trinity_ID":
+```{r}
+#make Trinity IDs into a column in tmdf
+df <- abcghi
+names <- rownames(abcghi)
+rownames(df) <- NULL
+data <- cbind(names, df)
+
+#rename column 1 in tmdf
+colnames(data) <- c("Trinity_ID", "CrabA_0", "CrabB_0", "CrabC_0", "CrabA_2", "CrabB_2", "CrabC_2", "CrabG_0", "CrabH_0", "CrabI_0", "CrabG_2", "CrabH_2", "CrabI_2")
+head(data)
+```
+
+`join` based on Trinity ID
+```{r}
+daytemp_degs_counts <- left_join(data, daytemp_degs, by = "Trinity_ID")
+head(daytemp_degs_counts)
+```
+
+Only want the ones that match!
+```{r}
+daytemp_degs_counts_match <- filter(daytemp_degs_counts, baseMean != "NA")
+head(daytemp_degs_counts_match)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(daytemp_degs_counts_match) <- daytemp_degs_counts_match$Trinity_ID #set Trinity IDs as rownames
+daytemp_degs_counts_match.heatmap <- daytemp_degs_counts_match[,-1] #remove redundant column
+head(daytemp_degs_counts_match.heatmap)
+```
 
 
+Pull out just the sample count data:
+```{r}
+daytemp_degs_counts_match.heatmap <- select(daytemp_degs_counts_match.heatmap, CrabA_0, CrabB_0, CrabC_0, CrabA_2, CrabB_2, CrabC_2, CrabG_0, CrabH_0, CrabI_0, CrabG_2, CrabH_2, CrabI_2)
+head(daytemp_degs_counts_match.heatmap)
+```
 
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_daytemp_degs_counts_match.heatmap <- daytemp_degs_counts_match.heatmap[rowSums(daytemp_degs_counts_match.heatmap[, -1] >0) !=0, ]
+head(noz_daytemp_degs_counts_match.heatmap)
+```
 
+```{r}
+heatmapPurpleOrange <- RColorBrewer::brewer.pal(11, "PuOr")
+```
 
+```{r}
+pheatmap(noz_daytemp_degs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
+```
 
 ## Do contrast between the different temperatures:
 ```{r}
