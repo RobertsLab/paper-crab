@@ -2,15 +2,15 @@
 title: "DESeq_libraries8-11"
 output: html_document
 ---
-Rmd to go through `DESeq2` pipeline. Will check data. Then will perform some DEG analyses. 
+Rmd to go through `DESeq2` pipeline. Will perform some DEG analyses. 
 
-Libraries 8-11 info: 
-(These were used in the 02-DeSeq-Temperature.Rmd comparing elevated and decreased)     
-They are all pooled samples:   
-8 --> Day 2, infected, decreased temperature
-9 --> Day 2, uninfected, decreased temperature
-10 --> Day 2, infected, elevated temperature
-11 --> Day 2, uninfected, elevated temperature
+Libraries 8-11 info:          
+(These were used in the 02-DeSeq-Temperature.Rmd comparing elevated and decreased)             
+They are all pooled samples:         
+8 --> Day 2, infected, decreased temperature         
+9 --> Day 2, uninfected, decreased temperature         
+10 --> Day 2, infected, elevated temperature         
+11 --> Day 2, uninfected, elevated temperature         
 
 ```{r}
 library(DESeq2)
@@ -20,7 +20,7 @@ library(RColorBrewer)
 ```
 
 
-Read in un-normalized counts:
+Read in un-normalized counts:               
 FROM TRANSCRIPTOME V. 1.5
 ```{r}
 pooldf <- read.table("../data/kallisto-0517.isoform.counts.txt", header = T, sep = "\t")
@@ -35,7 +35,7 @@ colnames(pooldf) <- c("uninfected_cold", "infected_cold", "uninfected_warm", "in
 head(pooldf)
 ```
 
-## Get DEGs based on infection (not including temperature as part of the design)
+## Get DEGs based on infection (not including temperature as part of the design)       
 Modeled after what was done in DESeq-infection.Rmd:
 ```{r}
 #colData <- data.frame(condition=factor(c("uninfected", "infected", "uninfected", "infected")), 
@@ -79,9 +79,9 @@ Modeled after what was done in DESeq-infection.Rmd:
 
 
 
-# Get DEGs based on infection with temperature as part of the design: 
-Taking temperature exposure into account!!      
-From Multi-factor designs section of:       
+# Get DEGs based on infection with temperature as part of the design:        
+Taking temperature exposure into account!!              
+From Multi-factor designs section of:               
 http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#multi-factor-designs 
 
 ```{r}
@@ -154,13 +154,13 @@ abline(h=c(-1,1), col="blue")
 ```
 Already wrote out, so I'm commenting above script out. 
 
-# Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?
+# Now I need to figure out what these results mean: how exactly does temperature impact DEGs based on infection?     
 
 
-In the multifactor section of the `DESeq2` manual: 
+In the multifactor section of the `DESeq2` manual:                
 The contrast argument of the function _results_ needs a character vector of three componenets: the name of the variable (in this case "temperature"), and the name of the factor level for the numerator of the log2 ratio (elevated) and the denominator (decreased) 
 
-A **contrast** is a linear combination of estimated log2 fold changes. Can be used to test if differences between groups are equal to zero. 
+A **contrast** is a linear combination of estimated log2 fold changes. Can be used to test if differences between groups are equal to zero.         
 ```{r}
 resultsNames(deseq2.dds)
 ```
@@ -251,7 +251,7 @@ already wrote out - comment out script
 
 ## `join` count data with list of 130
 
-Read in DEGlist of 130 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID": 
+Read in DEGlist of 130 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID":       
 ```{r}
 degs_contasttemp <-  read.delim("../analyses/DEGlist-contrast_temp-libs8-11.txt", sep = '\t')
 ```
@@ -354,10 +354,10 @@ inftemp.clust <- cbind(noz_inftempdegs_counts_match.heatmap,
 head(inftemp.clust)
 ```
 
-Cluster 1 --> infected_warm
-Cluster 2 --> uninfected_cold
-Cluster 3 --> uninfected_warm
-Cluster 4 --> infected_cold
+Cluster 1 --> infected_warm         
+Cluster 2 --> uninfected_cold          
+Cluster 3 --> uninfected_warm             
+Cluster 4 --> infected_cold          
 
 ## Gene clusters from heatmap contrasting temperatures from the comparison infection status taking temperature into account (second heatmap)
 
@@ -374,10 +374,10 @@ contrasttemp.clust <- cbind(noz_contrtempdegs_counts_match.heatmap,
 head(contrasttemp.clust)
 ```
 
-Cluster 1 --> uninfected_warm
-Cluster 2 --> infected_cold
-Cluster 3 --> 
-Cluster 4 --> uninfected_cold
+Cluster 1 --> uninfected_warm           
+Cluster 2 --> infected_cold            
+Cluster 3 -->                     
+Cluster 4 --> uninfected_cold           
 
 # `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
 
