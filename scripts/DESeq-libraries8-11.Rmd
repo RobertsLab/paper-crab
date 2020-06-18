@@ -412,8 +412,6 @@ head(blastout_uniprot)
 ```
 
 
-
-
 ## List of 183
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
@@ -440,6 +438,11 @@ head(inftemp.clust.degs)
 ```{r}
 annot_inftemp.clust.degs <- left_join(inftemp.clust.degs, blastout_uniprot, by = "Trinity_ID")
 head(annot_inftemp.clust.degs)
+```
+
+Write out annotated table:
+```{r}
+write.table(annot_inftemp.clust.degs, "../analyses/DEGlist-infection_temp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 
 ## List of 130
@@ -470,7 +473,10 @@ annot_contrtemp.clust.degs <- left_join(contrtemp.clust.degs, blastout_uniprot, 
 head(annot_contrtemp.clust.degs)
 ```
 
-
+Write out annotated table:
+```{r}
+write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
 
 
 

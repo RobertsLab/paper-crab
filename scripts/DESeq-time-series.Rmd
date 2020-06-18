@@ -114,24 +114,9 @@ ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) +
 resultsNames(abcghi.dds)
 ```
 
-```{r}
-res2 <- results(abcghi.dds, name = "temperatureelevated.dayday2", test = "Wald")
-res2[which.min(abcghi.res$pvalue),]
-```
 
-```{r}
-betas <- coef(abcghi.dds)
-colnames(betas)
-```
 
-```{r}
-mat <- betas[,-c(1,2)]
-mat[mat < -5] <- -5
-mat[mat > 5] <- 5
-topGenes <- head(order(abcghi.res$pvalue),10)
-colors <- RColorBrewer::brewer.pal(11, "PuOr")
-pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
-```
+
 
 
 ## Try all again, but with different individual samples: 
