@@ -56,17 +56,12 @@ Modeled after what was done in DESeq-infection.Rmd:
 ```{r}
 #head(res)
 ```
-Sometimes a subset of the p values in res will be NA (“not available”). This is DESeq's way of reporting that all counts for this gene were zero, and hence not test was applied. In addition, p values can be assigned NA if the gene was excluded from analysis because it contained an extreme count outlier. For more information, see the outlier detection section of the vignette.       
-(from https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFeb2015/B02.1.1_RNASeqLab.html#time)
-
 
 ```{r}
 # Count number of hits with adjusted p-value less then 0.05
 #dim(res[!is.na(res$padj) & res$padj <= 0.05, ])
 ```
-[1] 428   6
-
-So, without taking temperature into account, there are 428 DEGs between the infected and uninfected pooled samples. 
+[1] 428   6 <- without taking temperature into account
 
 ```{r}
 #infection_fig <- res
@@ -359,6 +354,11 @@ inftemp.clust <- cbind(noz_inftempdegs_counts_match.heatmap,
 head(inftemp.clust)
 ```
 
+Cluster 1 --> infected_warm
+Cluster 2 --> uninfected_cold
+Cluster 3 --> uninfected_warm
+Cluster 4 --> infected_cold
+
 ## Gene clusters from heatmap contrasting temperatures from the comparison infection status taking temperature into account (second heatmap)
 
 Set the heatmap as an object called 'results2':
@@ -373,6 +373,11 @@ contrasttemp.clust <- cbind(noz_contrtempdegs_counts_match.heatmap,
                                      k = 4))
 head(contrasttemp.clust)
 ```
+
+Cluster 1 --> uninfected_warm
+Cluster 2 --> infected_cold
+Cluster 3 --> 
+Cluster 4 --> uninfected_cold
 
 # `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
 
@@ -452,7 +457,6 @@ Subset the Trinity_ID column with the cluster column:
 contrtemp.trinID.clust <- select(final_contrtemp.res.clusts4, "Trinity_ID", "cluster")
 head(contrtemp.trinID.clust)
 ```
-
 
 `join` with contrtempdegs_counts_match
 ```{r}

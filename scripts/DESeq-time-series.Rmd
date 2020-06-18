@@ -75,16 +75,33 @@ levels(abcghi.dds$temperature)
 levels(abcghi.dds$day)
 ```
 
-
-
-The following chunk performs a likelihood ratio test where we remove the strain-specific differences over time. Genes with small _p_ alues from this test are those which, at one or more time points after time 0, showed a strain-specific effect. Note therefore that this will note give small _p_ values to genes which moved or down over time in the same way in both strains. 
-
 ```{r}
-abcghi.dds <- DESeq(abcghi.dds, test = "LRT", reduced = ~ temperature + day)
+design(abcghi.dds) <- formula(~ temperature + day)
+abcghi.dds <- DESeq(abcghi.dds)
 abcghi.res <- results(abcghi.dds)
 abcghi.res$symbol <- mcols(abcghi.dds)$symbol
 head(abcghi.res[order(abcghi.res$pvalue),],4)
 ```
+
+
+```{r}
+abcghi.res <- abcghi.res
+# The main plot
+plot(abcghi.res$baseMean, abcghi.res$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
+     #main="Infection Status  (pval </= 0.05)",
+     xlab="mean of normalized counts",
+     ylab="Log2 Fold Change")
+# Getting the significant points and plotting them again so they're a different color
+abcghi.res.sig <- abcghi.res[!is.na(abcghi.res$padj) & abcghi.res$padj <= 0.05, ]
+points(abcghi.res.sig$baseMean, abcghi.res.sig$log2FoldChange, pch=20, cex=0.45, col="red")
+# 2 FC lines
+abline(h=c(-1,1), col="blue")
+```
+
+```{r}
+#write.table(abcghi.res.sig, "../analyses/DEGlist-abcghi-timeseries.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+```
+
 
 ```{r}
 data <- plotCounts(abcghi.dds, which.min(abcghi.res$pvalue),
@@ -117,94 +134,73 @@ pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_m
 ```
 
 
-
-
-## try new design 
-Doesn't work because there aren't enough replicates. 
-```{r}
-#design(deseq2.dds) <- formula(~ temperature + day + temperature:day)
-#deseq2.dds <- DESeq(deseq2.dds)
-```
-
-
-Access results:
-```{r}
-#deseq2.res <- results(deseq2.dds)
-#head(deseq2.res)
-```
-
-```{r}
-#summary(deseq2.res)
-```
-
-```{r}
-# Count number of hits with adjusted p-value less then 0.05
-#dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
-```
-
-```{r}
-#indcrabs <- deseq2.res
-# The main plot
-#plot(indcrabs$baseMean, indcrabs$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
-     #main="Infection Status  (pval </= 0.05)",
-#     xlab="mean of normalized counts",
-#     ylab="Log2 Fold Change")
-# Getting the significant points and plotting them again so they're a different color
-#indcrabs.sig <- deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ]
-#points(indcrabs.sig$baseMean, indcrabs.sig$log2FoldChange, pch=20, cex=0.45, col="red")
-# 2 FC lines
-#abline(h=c(-1,1), col="blue")
-```
-
-
 ## Try all again, but with different individual samples: 
 
 I'll go with A vs E time points 0 and 2 and 17. 
 Subset those columns:
 ```{r}
-ave <- select(indiv_counts, CrabA_0, CrabA_2, CrabA_17, CrabE_0, CrabE_2, CrabE_17)
-head(ave)
+#ave <- select(indiv_counts, CrabA_0, CrabA_2, CrabA_17, CrabE_0, CrabE_2, CrabE_17)
+#head(ave)
 ```
 
 
 ```{r}
-ave.colData <- data.frame(temperature=factor(c(rep("ambient", 3), rep("decreased", 3))), 
-                             day=factor(c("day0", "day02", "day17", "day0", "day02", "day17")))
-rownames(ave.colData) <- colnames(ave)
-ave.dds <- DESeqDataSetFromMatrix(countData = ave,
-                                     colData = ave.colData, 
-                                     design = ~ temperature + day)
+#ave.colData <- data.frame(temperature=factor(c(rep("ambient", 3), rep("decreased", 3))), 
+#                             day=factor(c("day0", "day02", "day17", "day0", "day02", "day17")))
+#rownames(ave.colData) <- colnames(ave)
+#ave.dds <- DESeqDataSetFromMatrix(countData = ave,
+#                                     colData = ave.colData, 
+#                                     design = ~ temperature + day)
 ```
 
 ```{r}
-ave.dds <- DESeq(ave.dds)
-ave.res <- results(ave.dds)
-ave.res$symbol <- mcols(ave.dds)$symbol
-head(ave.res[order(ave.res$pvalue),],4)
+#design(ave.dds) <- formula( ~ temperature + day)
+#ave.dds <- DESeq(ave.dds)
+#ave.res <- results(ave.dds)
+#ave.res$symbol <- mcols(ave.dds)$symbol
+#head(ave.res[order(ave.res$pvalue),],4)
+```
+
+```{r}
+#ave.res <- ave.res
+# The main plot
+#plot(ave.res$baseMean, ave.res$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
+     #main="Infection Status  (pval </= 0.05)",
+#     xlab="mean of normalized counts",
+#     ylab="Log2 Fold Change")
+# Getting the significant points and plotting them again so they're a different color
+#ave.res.sig <- ave.res[!is.na(ave.res$padj) & ave.res$padj <= 0.05, ]
+#points(ave.res.sig$baseMean, ave.res.sig$log2FoldChange, pch=20, cex=0.45, col="red")
+# 2 FC lines
+#abline(h=c(-1,1), col="blue")
+```
+
+```{r}
+#write.table(ave.res.sig, "../analyses/DEGlist-ave-timeseries.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 
 
 ```{r}
-data <- plotCounts(ave.dds, which.min(ave.res$pvalue),
-                   intgroup = c("day","temperature"), returnData = TRUE)
-ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
-  geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
+#data <- plotCounts(ave.dds, which.min(ave.res$pvalue),
+#                   intgroup = c("day","temperature"), returnData = TRUE)
+#ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
+#  geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
 ```
 
 ```{r}
-ave.betas <- coef(ave.dds)
-colnames(ave.betas)
+#ave.betas <- coef(ave.dds)
+#colnames(ave.betas)
 ```
 
 
 Don't understand this next chunk of code... why are only two columns showing? 
 ```{r}
-mat <- ave.betas[,-c(1,2)]
-mat[mat < -5] <- -5
-mat[mat > 5] <- 5
-topGenes <- head(order(ave.res$pvalue),10)
-colors <- RColorBrewer::brewer.pal(11, "PuOr")
-pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
+#mat <- ave.betas[,-c(1,2)]
+#mat[mat < -5] <- -5
+#mat[mat > 5] <- 5
+#topGenes <- head(order(ave.res$pvalue),10)
+#colors <- RColorBrewer::brewer.pal(11, "PuOr")
+#pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6, ColV=FALSE)
 ```
 
 
