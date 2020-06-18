@@ -143,6 +143,12 @@ dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 ```
 2 DEGs 
 
+```{r}
+data <- plotCounts(abcghi.dds, which.min(deseq2.resTemp$pvalue),
+                   intgroup = c("day","temperature"), returnData = TRUE)
+ggplot(data, aes(x=day, y=count, color = temperature, group=temperature)) + 
+  geom_point() + stat_smooth(se=FALSE,method="loess") + scale_y_log10()
+```
 
 ## Try time series of just crab ABC genes over time: 
 
@@ -182,17 +188,25 @@ points(day.sig$baseMean, day.sig$log2FoldChange, pch=20, cex=0.45, col="red")
 abline(h=c(-1,1), col="blue")
 ```
 
+```{r}
+# Count number of hits with adjusted p-value less then 0.05
+dim(abc.res[!is.na(abc.res$padj) & abc.res$padj <= 0.05, ])
+```
+184
 
 ```{r}
-data <- plotCounts(abc.dds, which.min(abc.res$pvalue), 
+data <- plotCounts(abc.dds, "TRINITY_DN1454_c0_g1_i8", 
                    intgroup=c("day","crab"), returnData=TRUE)
 ggplot(data, aes(x=day, y=count, color=crab, group=crab)) + 
   geom_point() + stat_smooth(se=FALSE,method="loess") +  scale_y_log10()
 ```
+^ Can plot only one gene at a time for this plot. Plot gene of interest. 
+
 
 ```{r}
 resultsNames(abc.dds)
 ```
+
 ```{r}
 betas <- coef(abc.dds)
 colnames(betas)
@@ -200,9 +214,40 @@ colnames(betas)
 
 ```{r}
 mat <- betas[, -1]
-topGenes <- head(order(abc.res$pvalue),20)
+topGenes <- head(order(abc.res$pvalue),40)
 colors <- RColorBrewer::brewer.pal(11, "PuOr")
 pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6)
+```
+
+## Try to figure out what genes are doing things over time in crabs ABC
+Remove rows that have conts of '0' all across:
+```{r}
+abc_noz <- abc[rowSums(abc[, -1] >0) !=0, ]
+head(abc_noz)
+```
+30,186 rows
+
+Then, remove rows that have '0's in any sample: 
+```{r}
+row_sub = apply(abc_noz, 1, function(row) all(row !=0 ))
+abc_nozs <- abc_noz[row_sub,]
+head(abc_nozs)
+```
+502 rows
+
+```{r}
+abc_nozs.heatmap <- select(abc_nozs, "CrabA_0", "CrabA_2", "CrabA_17", "CrabB_0", "CrabB_2", "CrabB_17", "CrabC_0", "CrabC_2", "CrabC_17")
+head(abc_nozs.heatmap)
+```
+
+
+```{r}
+heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
+```
+
+Create a heatmap of those count data: 
+```{r}
+pheatmap(abc_nozs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
 ```
 
 
