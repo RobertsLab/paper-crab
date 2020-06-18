@@ -176,6 +176,16 @@ heatmapPurpleOrange <- RColorBrewer::brewer.pal(11, "PuOr")
 pheatmap(noz_daytemp_degs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
 
+Pull out just the sample count data:
+```{r}
+daytemp_degs_counts_match.heatmap2 <- select(daytemp_degs_counts_match.heatmap, CrabA_0, CrabB_0, CrabC_0,  CrabG_0, CrabH_0, CrabI_0, CrabA_2, CrabB_2, CrabC_2, CrabG_2, CrabH_2, CrabI_2)
+head(daytemp_degs_counts_match.heatmap2)
+```
+
+```{r}
+pheatmap(daytemp_degs_counts_match.heatmap2, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
+```
+
 ## Do contrast between the different temperatures:
 ```{r}
 deseq2.resTemp <- results(abcghi.dds,
