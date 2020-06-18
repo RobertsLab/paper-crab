@@ -110,7 +110,14 @@ dim(abcghi.res[!is.na(abcghi.res$padj) & abcghi.res$padj <= 0.05, ])
 ```
 137 degs comparing time while taking temp into account 
 
+Write out list of 137 DEGs:
+```{r}
+write.table(abcghi.res.sig, "../analyses/DEGlist-abcghi-daytemp.tab", sep = '\t', quote = FALSE, row.names = TRUE, col.names = TRUE)
+```
+
+
 `join` with count data to make a heatmap:
+
 
 
 
