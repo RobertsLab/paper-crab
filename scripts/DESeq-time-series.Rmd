@@ -110,6 +110,12 @@ dim(abcghi.res[!is.na(abcghi.res$padj) & abcghi.res$padj <= 0.05, ])
 ```
 137 degs comparing time while taking temp into account 
 
+`join` with count data to make a heatmap:
+
+
+
+
+
 ## Do contrast between the different temperatures:
 ```{r}
 deseq2.resTemp <- results(abcghi.dds,
@@ -138,12 +144,66 @@ dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 2 DEGs 
 
 
+## Try time series of just crab ABC genes over time: 
+
+Subset those columns:
+```{r}
+abc <- select(indiv_counts, CrabA_0, CrabB_0, CrabC_0, CrabA_2, CrabB_2, CrabC_2, CrabA_17, CrabB_17, CrabC_17)
+head(abc)
+```
+
+```{r}
+abc.colData <- data.frame(crab=factor(c("crabA", "crabB", "crabC", "crabA", "crabB", "crabC", "crabA", "crabB", "crabC")), 
+                             day=factor(c(rep("day0", 3), rep("day02", 3), rep("day17", 3))))
+rownames(abc.colData) <- colnames(abc)
+abc.dds <- DESeqDataSetFromMatrix(countData = abc,
+                                     colData = abc.colData, 
+                                     design = ~ day)
+```
+
+```{r}
+abc.dds <- DESeq(abc.dds)
+abc.res <- results(abc.dds)
+abc.res$symbol <- mcols(abc.dds)$symbol
+head(abc.res[order(abc.res$pvalue),],4)
+```
+
+```{r}
+day <- abc.res
+# The main plot
+plot(day$baseMean, day$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
+     #main="Infection Status  (pval </= 0.05)",
+     xlab="mean of normalized counts",
+     ylab="Log2 Fold Change")
+# Getting the significant points and plotting them again so they're a different color
+day.sig <- abc.res[!is.na(abc.res$padj) & abc.res$padj <= 0.05, ]
+points(day.sig$baseMean, day.sig$log2FoldChange, pch=20, cex=0.45, col="red")
+# 2 FC lines
+abline(h=c(-1,1), col="blue")
+```
 
 
+```{r}
+data <- plotCounts(abc.dds, which.min(abc.res$pvalue), 
+                   intgroup=c("day","crab"), returnData=TRUE)
+ggplot(data, aes(x=day, y=count, color=crab, group=crab)) + 
+  geom_point() + stat_smooth(se=FALSE,method="loess") +  scale_y_log10()
+```
 
+```{r}
+resultsNames(abc.dds)
+```
+```{r}
+betas <- coef(abc.dds)
+colnames(betas)
+```
 
-
-
+```{r}
+mat <- betas[, -1]
+topGenes <- head(order(abc.res$pvalue),20)
+colors <- RColorBrewer::brewer.pal(11, "PuOr")
+pheatmap(mat [topGenes, ],  clustering_distance_rows = "euclidean", clustering_method = "average", treeheight_col = 80, legend = TRUE, color = colors, fontsize_col = 10, fontsize_row = 6)
+```
 
 
 
