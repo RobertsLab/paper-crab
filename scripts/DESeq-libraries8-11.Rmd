@@ -392,11 +392,11 @@ Cluster 4 --> uninfected_cold
 
 # `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
 
-## `join` the transcriptome v. 1.5 `blast` output with GO annotations: 
+## `join` the transcriptome v. 3.1 `blast` output with GO annotations: 
 
 upload `blast` output from transcriptome v. 3.1
 ```{r}
-blastout <- read.delim("https://gannet.fish.washington.edu/Atumefaciens/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v3.1.blastx.outfmt6", sep = '\t', header = FALSE)
+blastout <- read.delim("../analyses/_blast-sep-v3.1.tab", sep = '\t', header = FALSE)
 head(blastout)
 ```
 Rename some columns so that this file can be `join`-ed with the uniprot-SP-Go:
@@ -423,7 +423,7 @@ head(blastout_uniprot)
 ```
 
 
-## List of 183
+## List of 408
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
 inftemp.res.clusts4 <- inftemp.clust
@@ -456,7 +456,7 @@ Write out annotated table:
 write.table(annot_inftemp.clust.degs, "../analyses/DEGlist-infection_temp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 
-## List of 130
+## List of 123
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
 contrtemp.res.clusts4 <- contrasttemp.clust
