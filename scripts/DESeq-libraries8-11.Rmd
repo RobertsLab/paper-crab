@@ -23,8 +23,8 @@ library(RColorBrewer)
 Read in un-normalized counts:               
 FROM TRANSCRIPTOME V. 1.5
 ```{r}
-pooldf <- read.table("../data/kallisto-0517.isoform.counts.txt", header = T, sep = "\t")
-rownames(pooldf) <- pooldf$FeatureID
+pooldf <- read.table("../analyses/kallisto-0618.isoform.counts.matrix", header = T, sep = "\t")
+rownames(pooldf) <- pooldf$X
 pooldf <- pooldf[,-1]
 head(pooldf)
 ```
@@ -34,6 +34,14 @@ Rename columns so I know which samples are infected and which are uninfected:
 colnames(pooldf) <- c("uninfected_cold", "infected_cold", "uninfected_warm", "infected_warm")
 head(pooldf)
 ```
+
+ROUND INTEGERS UP:
+```{r}
+pooldf <- round(pooldf,0)
+head(pooldf)
+```
+
+
 
 ## Get DEGs based on infection (not including temperature as part of the design)       
 Modeled after what was done in DESeq-infection.Rmd:
@@ -150,7 +158,7 @@ abline(h=c(-1,1), col="blue")
 ```
 
 ```{r}
-#write.table(inf.sig, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+write.table(inf.sig, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 Already wrote out, so I'm commenting above script out. 
 
@@ -196,7 +204,7 @@ summary(deseq2.resTemp)
 ```
 
 ```{r}
-#write.table(tmp.sig, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+write.table(tmp.sig, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 Already wrote out, so I'm commenting above script out. 
 
@@ -215,7 +223,7 @@ Read in DEGlist of 183 (.txt version where the rownames of Trinity IDs are a col
 ```{r}
 deglist_inftemp <- read.delim("../analyses/DEGlist-infection_temp-libs8-11.txt", sep = '\t')
 ```
-183 rows --> good to go. 
+408 rows --> good to go. 
 
 Make row names of pooldf Trinity IDs into a column called "Trinity_ID":
 ```{r}
@@ -241,11 +249,11 @@ Only want the ones that match!
 inftempdegs_counts_match <- filter(degs_inftemp_counts, baseMean != "NA")
 head(inftempdegs_counts_match)
 ```
-183 rows. 
+408 rows. 
 
 Write out list with count data:
 ```{r}
-#write.table(inftempdegs_counts_match, "../analyses/DEGlist-inf-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+write.table(inftempdegs_counts_match, "../analyses/DEGlist-inf-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 already wrote out - comment out script
 
@@ -255,7 +263,7 @@ Read in DEGlist of 130 (.txt version where the rownames of Trinity IDs are a col
 ```{r}
 degs_contasttemp <-  read.delim("../analyses/DEGlist-contrast_temp-libs8-11.txt", sep = '\t')
 ```
-130 rows - excellent
+123 rows - excellent
 
 `join` based on Trinity ID
 ```{r}
@@ -268,7 +276,7 @@ Only want the ones that match!
 contrtempdegs_counts_match <- filter(deg_contrasttemp_counts, baseMean != "NA")
 head(contrtempdegs_counts_match)
 ```
-130 rows 
+123 rows 
 
 Values in that list with large positive log2 fold changes only have counts in warm samples
 
@@ -276,7 +284,7 @@ values in that list with small negative log2 fold changes only have counts in co
 
 Write out list with count data:
 ```{r}
-#write.table(contrtempdegs_counts_match, "../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+write.table(contrtempdegs_counts_match, "../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 already wrote out - comment out script
 
