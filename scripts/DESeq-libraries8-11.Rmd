@@ -21,7 +21,7 @@ library(RColorBrewer)
 
 
 Read in un-normalized counts:               
-FROM TRANSCRIPTOME V. 1.5
+FROM TRANSCRIPTOME V. 3.1
 ```{r}
 pooldf <- read.table("../analyses/kallisto-0618.isoform.counts.matrix", header = T, sep = "\t")
 rownames(pooldf) <- pooldf$X
@@ -69,7 +69,7 @@ Modeled after what was done in DESeq-infection.Rmd:
 # Count number of hits with adjusted p-value less then 0.05
 #dim(res[!is.na(res$padj) & res$padj <= 0.05, ])
 ```
-[1] 428   6 <- without taking temperature into account
+
 
 ```{r}
 #infection_fig <- res
@@ -142,6 +142,8 @@ summary(deseq2.res)
 # Count number of hits with adjusted p-value less then 0.05
 dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
 ```
+408
+
 
 ```{r}
 inf <- deseq2.res
@@ -158,7 +160,7 @@ abline(h=c(-1,1), col="blue")
 ```
 
 ```{r}
-write.table(inf.sig, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+#write.table(inf.sig, "../analyses/DEGlist-infection_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 Already wrote out, so I'm commenting above script out. 
 
@@ -198,13 +200,14 @@ abline(h=c(-1,1), col="blue")
 # Count number of hits with adjusted p-value less then 0.05
 dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 ```
+123 
 
 ```{r}
 summary(deseq2.resTemp)
 ```
 
 ```{r}
-write.table(tmp.sig, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+#write.table(tmp.sig, "../analyses/DEGlist-contrast_temp-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
 Already wrote out, so I'm commenting above script out. 
 
@@ -253,7 +256,7 @@ head(inftempdegs_counts_match)
 
 Write out list with count data:
 ```{r}
-write.table(inftempdegs_counts_match, "../analyses/DEGlist-inf-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+#write.table(inftempdegs_counts_match, "../analyses/DEGlist-inf-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 already wrote out - comment out script
 
@@ -284,7 +287,7 @@ values in that list with small negative log2 fold changes only have counts in co
 
 Write out list with count data:
 ```{r}
-write.table(contrtempdegs_counts_match, "../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+#write.table(contrtempdegs_counts_match, "../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 already wrote out - comment out script
 
@@ -320,7 +323,7 @@ heatmapPurpleOrange <- RColorBrewer::brewer.pal(11, "PuOr")
 pheatmap(noz_inftempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
 
-## Heatmap of counts from 130 list (contrast of temperatures from infection comparison taking temperature into account)
+## Heatmap of counts from 123 list (contrast of temperatures from infection comparison taking temperature into account)
 
 Set Trinity_ID as row names:
 ```{r}
@@ -391,9 +394,9 @@ Cluster 4 --> uninfected_cold
 
 ## `join` the transcriptome v. 1.5 `blast` output with GO annotations: 
 
-upload `blast` output from transcriptome v. 1.5
+upload `blast` output from transcriptome v. 3.1
 ```{r}
-blastout <- read.delim("../../project-crab/analyses/BLAST_to_GOslim/_blast-sep.tab", sep = '\t', header = FALSE)
+blastout <- read.delim("https://gannet.fish.washington.edu/Atumefaciens/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v3.1.blastx.outfmt6", sep = '\t', header = FALSE)
 head(blastout)
 ```
 Rename some columns so that this file can be `join`-ed with the uniprot-SP-Go:
