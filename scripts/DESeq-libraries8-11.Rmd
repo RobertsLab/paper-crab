@@ -453,7 +453,7 @@ head(annot_inftemp.clust.degs)
 
 Write out annotated table:
 ```{r}
-write.table(annot_inftemp.clust.degs, "../analyses/DEGlist-infection_temp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+#write.table(annot_inftemp.clust.degs, "../analyses/DEGlist-infection_temp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 
 ## List of 123
@@ -486,7 +486,7 @@ head(annot_contrtemp.clust.degs)
 
 Write out annotated table:
 ```{r}
-write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+#write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 
 
