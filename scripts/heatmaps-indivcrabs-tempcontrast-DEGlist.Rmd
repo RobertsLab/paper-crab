@@ -2,7 +2,181 @@
 title: "heatmaps-with-libs8-11DEGlist"
 output: html_document
 ---
-Rmd to make heatmaps. Using list of DEGs from comparison of libraries 8-11 based on infection taking temperature into account contrasting the two temperatures (list of 123 DEGs). will map those genes in the individual crab samples RNAseq data. 
+Rmd to make heatmaps. Using list of DEGs from comparison of libraries 8-11 based on infection taking temperature into account contrasting the two temperatures (list of 123 DEGs). will map those genes in the individual crab samples RNAseq data. These might be kind of weird because the individual crab RNAseq results were not used in assembling transcriptome v 3.1.
+
+### Set up R Markdown document
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(pheatmap)
+library(dplyr)
+library(RColorBrewer)
+```
+
+Read in normalized counts from transcriptome V : (individual RNAseq data was not used in transcriptome v 3.1) 
+```{r}
+norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
+head(norm_counts)
+```
+
+Rename columns: 
+```{r}
+colnames(norm_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(norm_counts)
+```
+
+
+## Read in DEG list from temperature contrast after getting DEGs from infection taking temp into account (DESeq-libraries8-11.Rmd)
+Read in DEG list (123)
+```{r}
+contrasttemp_degs <- read.delim("../analyses/DEGlist-contrast_temp-libs8-11.txt", header = TRUE)
+head(contrasttemp_degs)
+```
+
+`join` with norm_counts by "Trinity_ID"
+```{r}
+contrasttemp_degs_counts <- left_join(norm_counts, contrasttemp_degs, by = "Trinity_ID")
+head(contrasttemp_degs_counts)
+```
+
+Just want the ones that match! (list of 423)
+```{r}
+contrasttemp_degs_counts_match <- filter(contrasttemp_degs_counts, baseMean != "NA")
+head(contrasttemp_degs_counts_match)
+```
+
+13 rows.... 
+
+Pull out just the sample count data:
+```{r}
+conttempdegs <- select(contrasttemp_degs_counts_match, Trinity_ID, CrabA_0, CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17, CrabD_0, CrabD_2, CrabD_17, CrabE_0, CrabE_2, CrabE_17, CrabF_0, CrabF_2, CrabF_17, CrabG_0, CrabG_2, CrabH_0, CrabH_2, CrabI_0, CrabI_2)
+head(conttempdegs)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(conttempdegs) <- conttempdegs$Trinity_ID #set Trinity IDs as rownames
+conttempdegs.heatmap <- conttempdegs[,-1] #remove redundant column
+head(conttempdegs.heatmap)
+```
+
+ROUND INTEGERS UP:
+```{r}
+conttempdegs.heatmap <- round(conttempdegs.heatmap,0)
+head(conttempdegs.heatmap)
+```
+
+
+Create heatmap colors:
+```{r}
+heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
+```
+
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_conttempdegs.heatmap <- conttempdegs.heatmap[rowSums(conttempdegs.heatmap[, -1] >0) !=0, ]
+head(noz_conttempdegs.heatmap)
+```
+
+```{r}
+pheatmap(noz_conttempdegs.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
+```
+
+### make one of samples ABC and GHI at two time points: 
+Pull out just the sample count data:
+```{r}
+abcghi <- select(contrasttemp_degs_counts_match, Trinity_ID, CrabA_0,  CrabB_0, CrabC_0, CrabG_0, CrabH_0, CrabI_0, CrabA_2, CrabB_2, CrabC_2, CrabG_2, CrabH_2, CrabI_2)
+head(abcghi)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(abcghi) <- abcghi$Trinity_ID #set Trinity IDs as rownames
+abcghi.heatmap <- abcghi[,-1] #remove redundant column
+head(abcghi.heatmap)
+```
+
+ROUND INTEGERS UP:
+```{r}
+abcghi.heatmap <- round(abcghi.heatmap,0)
+head(abcghi.heatmap)
+```
+
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_abcghi.heatmap <- abcghi.heatmap[rowSums(abcghi.heatmap[, -1] >0) !=0, ]
+head(noz_abcghi.heatmap)
+```
+
+```{r}
+pheatmap(noz_abcghi.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
+```
+
+### Just crab ABC over time: 
+```{r}
+abc <- select(contrasttemp_degs_counts_match, Trinity_ID, CrabA_0,  CrabB_0, CrabC_0, CrabA_2, CrabB_2, CrabC_2, CrabA_17, CrabB_17, CrabC_17)
+head(abc)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(abc) <- abc$Trinity_ID #set Trinity IDs as rownames
+abc.heatmap <- abc[,-1] #remove redundant column
+head(abc.heatmap)
+```
+
+ROUND INTEGERS UP:
+```{r}
+abc.heatmap <- round(abc.heatmap,0)
+head(abc.heatmap)
+```
+
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_abc.heatmap <- abc.heatmap[rowSums(abc.heatmap[, -1] >0) !=0, ]
+head(noz_abc.heatmap)
+```
+
+```{r}
+pheatmap(noz_abc.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
+```
+
+qPCR results from each crab:     
+Crab A --> starting quantity of Hemat:   1119
+Crab B --> starting quantity of Hemat: 105477 
+Crab C --> starting quantity of Hemat: 333000
+
+#### Same heatmap, but with AAA BBB and CCC grouped together across time
+
+```{r}
+abc2 <- select(contrasttemp_degs_counts_match, Trinity_ID, CrabA_0,  CrabA_2, CrabA_17, CrabB_0, CrabB_2, CrabB_17, CrabC_0, CrabC_2, CrabC_17)
+head(abc2)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(abc2) <- abc2$Trinity_ID #set Trinity IDs as rownames
+abc2.heatmap <- abc2[,-1] #remove redundant column
+head(abc2.heatmap)
+```
+
+ROUND INTEGERS UP:
+```{r}
+abc2.heatmap <- round(abc2.heatmap,0)
+head(abc2.heatmap)
+```
+
+Going to remove all rows that have "0" for all samples: 
+```{r}
+noz_abc2.heatmap <- abc2.heatmap[rowSums(abc2.heatmap[, -1] >0) !=0, ]
+head(noz_abc2.heatmap)
+```
+
+```{r}
+pheatmap(noz_abc2.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
+```
 
 
 
