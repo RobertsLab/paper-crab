@@ -1,0 +1,9 @@
+---
+title: "heatmaps-with-libs8-11DEGlist"
+output: html_document
+---
+Rmd to make heatmaps. Using list of DEGs from comparison of libraries 8-11 based on infection taking temperature into account contrasting the two temperatures (list of 123 DEGs). will map those genes in the individual crab samples RNAseq data. 
+
+
+
+
