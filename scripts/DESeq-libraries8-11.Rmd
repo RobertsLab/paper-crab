@@ -46,43 +46,43 @@ head(pooldf)
 ## Get DEGs based on infection (not including temperature as part of the design)       
 Modeled after what was done in DESeq-infection.Rmd:
 ```{r}
-#colData <- data.frame(condition=factor(c("uninfected", "infected", "uninfected", "infected")), 
-#                             type=factor(rep("paired-end", 4)))
-#rownames(colData) <- colnames(pooldf)
-#dds <- DESeqDataSetFromMatrix(countData = pooldf,
-#                                     colData = colData, 
-#                                     design = ~ condition)
+colData <- data.frame(condition=factor(c("uninfected", "infected", "uninfected", "infected")), 
+                             type=factor(rep("paired-end", 4)))
+rownames(colData) <- colnames(pooldf)
+dds <- DESeqDataSetFromMatrix(countData = pooldf,
+                                     colData = colData, 
+                                     design = ~ condition)
 ```
 
 ```{r}
-#dds <- DESeq(dds)
-#res <- results(dds)
-#res <- res[order(rownames(res)), ]
+dds <- DESeq(dds)
+res <- results(dds)
+res <- res[order(rownames(res)), ]
 ```
 
 
 ```{r}
-#head(res)
+head(res)
 ```
 
 ```{r}
 # Count number of hits with adjusted p-value less then 0.05
-#dim(res[!is.na(res$padj) & res$padj <= 0.05, ])
+dim(res[!is.na(res$padj) & res$padj <= 0.05, ])
 ```
-
+1,343 rows! DEGs just based on infection (irrespective of temperature)
 
 ```{r}
-#infection_fig <- res
+infection_fig <- res
 # The main plot
-#plot(infection_fig$baseMean, infection_fig$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
-     #main="Infection Status  (pval </= 0.05)",
-#     xlab="mean of normalized counts",
-#     ylab="Log2 Fold Change")
+plot(infection_fig$baseMean, infection_fig$log2FoldChange, pch=20, cex=0.45, ylim=c(-15, 15), log="x", col="darkgray",
+     main="Infection Status  (pval </= 0.05)",
+     xlab="mean of normalized counts",
+     ylab="Log2 Fold Change")
 # Getting the significant points and plotting them again so they're a different color
-#infection_fig.sig <- res[!is.na(res$padj) & res$padj <= 0.05, ]
-#points(infection_fig.sig$baseMean, infection_fig.sig$log2FoldChange, pch=20, cex=0.45, col="red")
+infection_fig.sig <- res[!is.na(res$padj) & res$padj <= 0.05, ]
+points(infection_fig.sig$baseMean, infection_fig.sig$log2FoldChange, pch=20, cex=0.45, col="red")
 # 2 FC lines
-#abline(h=c(-1,1), col="blue")
+abline(h=c(-1,1), col="blue")
 ```
 
 
@@ -142,7 +142,7 @@ summary(deseq2.res)
 # Count number of hits with adjusted p-value less then 0.05
 dim(deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ])
 ```
-408
+408 DEGs based on infection, but taking temperature into account. 
 
 
 ```{r}
@@ -200,7 +200,7 @@ abline(h=c(-1,1), col="blue")
 # Count number of hits with adjusted p-value less then 0.05
 dim(deseq2.resTemp[!is.na(deseq2.resTemp$padj) & deseq2.resTemp$padj <= 0.05, ])
 ```
-123 
+123 DEGs - genes that are influenced by temperature that are to do with infection
 
 ```{r}
 summary(deseq2.resTemp)
@@ -322,6 +322,9 @@ heatmapPurpleOrange <- RColorBrewer::brewer.pal(11, "PuOr")
 ```{r}
 pheatmap(noz_inftempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
+ 
+408 DEGs that are to do with infection, taking temperature into account. 
+
 
 ## Heatmap of counts from 123 list (contrast of temperatures from infection comparison taking temperature into account)
 
@@ -347,6 +350,8 @@ head(noz_contrtempdegs_counts_match.heatmap)
 ```{r}
 pheatmap(noz_contrtempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
+
+123 DEGs - genes that are to do with infection that are influenced by temperature
 
 # Get the genes that correspond with the clusters (the purple ones --> higher expression)
 
@@ -377,18 +382,16 @@ Set the heatmap as an object called 'results2':
 results2 <- pheatmap(noz_contrtempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
 ```
 
-extract 4 clusters. 
+extract 2 clusters. 
 ```{r}
 contrasttemp.clust <- cbind(noz_contrtempdegs_counts_match.heatmap,
                    cluster = cutree(results2$tree_row,
-                                     k = 4))
+                                     k = 2))
 head(contrasttemp.clust)
 ```
 
-Cluster 1 --> uninfected_warm           
-Cluster 2 --> infected_cold            
-Cluster 3 -->                     
-Cluster 4 --> uninfected_cold           
+Cluster 1 --> warm                
+Cluster 2 --> cold          
 
 # `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
 
@@ -404,7 +407,7 @@ Rename some columns so that this file can be `join`-ed with the uniprot-SP-Go:
 colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
 head(blastout)
 ```
-Read in the uniprot-SP-GO.sorted file:
+Read in the uniprot-SP-GO.sorted file:     
 ```{r}
 uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
 head(uniprot_sp_GO)
@@ -459,16 +462,16 @@ Write out annotated table:
 ## List of 123
 Set Trinity IDs as a column called "Trinity_ID":
 ```{r}
-contrtemp.res.clusts4 <- contrasttemp.clust
-Trinity_ID <- rownames(contrtemp.res.clusts4)
-rownames(contrtemp.res.clusts4) <- NULL
-final_contrtemp.res.clusts4 <- cbind(Trinity_ID, contrtemp.res.clusts4)
-head(final_contrtemp.res.clusts4)
+contrtemp.res.clusts2 <- contrasttemp.clust
+Trinity_ID <- rownames(contrtemp.res.clusts2)
+rownames(contrtemp.res.clusts2) <- NULL
+final_contrtemp.res.clusts2 <- cbind(Trinity_ID, contrtemp.res.clusts2)
+head(final_contrtemp.res.clusts2)
 ```
 
 Subset the Trinity_ID column with the cluster column:
 ```{r}
-contrtemp.trinID.clust <- select(final_contrtemp.res.clusts4, "Trinity_ID", "cluster")
+contrtemp.trinID.clust <- select(final_contrtemp.res.clusts2, "Trinity_ID", "cluster")
 head(contrtemp.trinID.clust)
 ```
 
@@ -486,7 +489,7 @@ head(annot_contrtemp.clust.degs)
 
 Write out annotated table:
 ```{r}
-#write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 
 
