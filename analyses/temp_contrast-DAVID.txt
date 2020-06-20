@@ -1,2 +1,0 @@
-Category	Term	Count	%	PValue	Genes	List Total	Pop Hits	Pop Total	Fold Enrichment	Bonferroni	Benjamini	FDR
-GOTERM_BP_DIRECT	GO:0042787~protein ubiquitination involved in ubiquitin-dependent protein catabolic process	2	6.451612903225806	0.08749079152179857	Q5T4S7, Q9ULT8	11	153	16792	19.954842543077838	0.9973973148999717	0.9973973148999717	60.66862693616694
