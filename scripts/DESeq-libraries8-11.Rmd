@@ -85,6 +85,9 @@ points(infection_fig.sig$baseMean, infection_fig.sig$log2FoldChange, pch=20, cex
 abline(h=c(-1,1), col="blue")
 ```
 
+```{r}
+write.table(infection_fig.sig, "../analyses/DEGlist-infectionONLY-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+```
 
 
 # Get DEGs based on infection with temperature as part of the design:        
