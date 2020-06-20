@@ -86,9 +86,9 @@ abline(h=c(-1,1), col="blue")
 ```
 
 ```{r}
-write.table(infection_fig.sig, "../analyses/DEGlist-infectionONLY-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
+#write.table(infection_fig.sig, "../analyses/DEGlist-infectionONLY-libs8-11.tab", sep = "\t", row.names = T, quote = FALSE, col.names = TRUE)
 ```
-
+wrote out 6/20/2020- commented out code
 
 # Get DEGs based on infection with temperature as part of the design:        
 Taking temperature exposure into account!!              
@@ -222,6 +222,44 @@ From https://www.bioconductor.org/help/course-materials/2015/LearnBioconductorFe
 **DEGs (183) based on infection taking temperature into account amd DEGs (130) just between elevated and decreased temperature treatments are the results.** 
 
 # After chat with SR --> `join` count data with list of 183 AND 130 genes to see what makes sense. 
+
+## `join` count data with list of 1343 DEGs based on infection alone:
+
+Read in DEGlist of 1343 DEGs (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID"):
+```{r}
+deglist_infONLY <- read.delim("../analyses/DEGlist-infectionONLY-libs8-11.txt", sep = '\t')
+```
+
+Make row names of pooldf Trinity IDs into a column called "Trinity_ID":
+```{r}
+#make Trinity IDs into a column in tmdf
+df <- pooldf
+names <- rownames(pooldf)
+rownames(df) <- NULL
+data <- cbind(names, df)
+
+#rename column 1 in tmdf
+colnames(data) <- c("Trinity_ID", "uninfected_cold", "infected_cold", "uninfected_warm", "infected_warm")
+head(data)
+```
+
+`join` based on Trinity ID
+```{r}
+degs_infONLY_counts <- left_join(data, deglist_infONLY, by = "Trinity_ID")
+head(degs_infONLY_counts)
+```
+
+Only want the ones that match!
+```{r}
+degs_infONLY_counts_match <- filter(degs_infONLY_counts, baseMean != "NA")
+head(degs_infONLY_counts_match)
+```
+1343 rows! 
+
+Write out list with count data:
+```{r}
+write.table(degs_infONLY_counts_match, "../analyses/DEGlist-infONLY-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
 
 ## `join` count data with list of 183
 
@@ -428,6 +466,12 @@ blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
 head(blastout_uniprot)
 ```
 
+## List of 1343
+`join` degs_infONLY_counts_match with blastout_uniprot based on "Trinity_ID"
+```{r}
+annot_infONLY_degscounts <- left_join(degs_infONLY_counts_match, blastout_uniprot, by = "Trinity_ID")
+head(annot_infONLY_degscounts)
+```
 
 ## List of 408
 Set Trinity IDs as a column called "Trinity_ID":
