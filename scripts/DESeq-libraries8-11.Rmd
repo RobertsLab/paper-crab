@@ -258,7 +258,7 @@ head(degs_infONLY_counts_match)
 
 Write out list with count data:
 ```{r}
-write.table(degs_infONLY_counts_match, "../analyses/DEGlist-infONLY-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+#write.table(degs_infONLY_counts_match, "../analyses/DEGlist-infONLY-libs8-11_counts.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
 
 ## `join` count data with list of 183
@@ -472,6 +472,13 @@ head(blastout_uniprot)
 annot_infONLY_degscounts <- left_join(degs_infONLY_counts_match, blastout_uniprot, by = "Trinity_ID")
 head(annot_infONLY_degscounts)
 ```
+
+Write out annotated table:
+```{r}
+#write.table(annot_infONLY_degscounts, "../analyses/DEGlist-infectionONLY-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
+
 
 ## List of 408
 Set Trinity IDs as a column called "Trinity_ID":
