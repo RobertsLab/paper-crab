@@ -489,9 +489,9 @@ head(annot_contrtemp.clust.degs)
 
 Write out annotated table:
 ```{r}
-write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+#write.table(annot_contrtemp.clust.degs, "../analyses/DEGlist-contrasttemp-annot.tab", sep = '\t', quote = FALSE, row.names = FALSE)
 ```
-
+wrote out table 6/20/2020 with 2 clusters ^
 
 
 
