@@ -2,27 +2,93 @@
 title: "transcriptome 3.1 - get stress response genes"
 output: html_document
 ---
+Rmd to get a list of Trinity IDs from the transcriptome (v 3.1) that are associated with the GOslim term 'stress response'. The list should have 
+11046 rows. 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+library(tidyverse)
+library(dplyr)
 ```
 
-## R Markdown
+### Read in the uniprot-SP-GO.sorted file :
+```{r}
+uniprot_sp_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_sp_GO)
+```
+168361 rows
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+#### Rename column "V1" to "uniprot_acc_ID"
+```{r}
+colnames(uniprot_sp_GO) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_sp_GO)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+### Read in the `BLAST` output, but the one that is called "_blast-sep-v3.1.tab from transcriptome v 3.1
+```{r}
+blastout <- read.delim("../analyses/_blast-sep-v3.1.tab", sep = '\t', header = FALSE)
+head(blastout)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#### Rename columnn "V3" --> "uniprot_acc_ID"
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+
+### `join` blastout and uniprot_sp_GO by "uniprot_acc_ID" column:
+```{r}
+blastout_uniprot <- left_join(blastout, uniprot_sp_GO, by = "uniprot_acc_ID")
+head(blastout_uniprot)
+```
+
+Call out number of Trinity IDs that have GO terms (stat for paper)
+```{r}
+GOblast <- blastout_uniprot %>%
+  filter(str_detect(review_status, "reviewed"))
+head(GOblast)
+```
+25187 of the genes from transcriptome v 3.1 have hits with uniprot-SP-go
+
+### Read in the table from the BLAST to GOslim jupter notebook linked above called "Blastquery-GOslim_v3.1.tab".
+```{r}
+blastquery_goslim <- read.table("../analyses/Blastquery-GOslim_v3.1.tab", sep = '\t')
+head(blastquery_goslim)
+```
+459411 rows
+
+#### add column names
+```{r}
+colnames(blastquery_goslim) <- c("Trinity_ID", "GO_ID", "GOslim", "biological_process")
+head(blastquery_goslim)
+```
+
+#### Call out the GOslim terms that have the word "stress" in them: 
+```{r}
+stress <- blastquery_goslim %>%
+  filter(str_detect(GOslim, "stress"))
+head(stress)
+```
+11046 rows!
+
+### `join` the stress list with the annotated blast output (blastout_uniprot)
+```{r}
+stress_annot <- left_join(stress, blastout_uniprot, by = "Trinity_ID")
+head(stress_annot)
+```
+11423 rows
+
+
+Find out how many of them DO have GO annotation (stat for paper):
+```{r}
+GOstress <- stress_annot %>%
+  filter(str_detect(review_status, "reviewed"))
+head(GOstress)
+```
+5172 rows
+
+### write out transcriptome stress genes to paper-crab/analyses
+```{r}
+write.table(stress_annot, "../analyses/stress-response-genes-tr3.1.tab", sep = '\t', quote = FALSE, row.names = FALSE)
+```
+
