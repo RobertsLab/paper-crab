@@ -301,7 +301,7 @@ Write out list with count data:
 ```
 already wrote out - comment out script
 
-## `join` count data with list of 130
+## `join` count data with list of 123
 
 Read in DEGlist of 130 (.txt version where the rownames of Trinity IDs are a column called "Trinity_ID":       
 ```{r}
