@@ -31,7 +31,7 @@ head(pooldf)
 
 Rename columns so I know which samples are infected and which are uninfected:
 ```{r}
-colnames(pooldf) <- c("uninfected_cold", "infected_cold", "uninfected_warm", "infected_warm")
+colnames(pooldf) <- c("uninfected_decreased", "infected_decreased", "uninfected_elevated", "infected_elevated")
 head(pooldf)
 ```
 
@@ -239,7 +239,7 @@ rownames(df) <- NULL
 data <- cbind(names, df)
 
 #rename column 1 in tmdf
-colnames(data) <- c("Trinity_ID", "uninfected_cold", "infected_cold", "uninfected_warm", "infected_warm")
+colnames(data) <- c("Trinity_ID", "uninfected_decreased", "infected_decreased", "uninfected_elevated", "infected_elevated")
 head(data)
 ```
 
@@ -278,7 +278,7 @@ rownames(df) <- NULL
 data <- cbind(names, df)
 
 #rename column 1 in tmdf
-colnames(data) <- c("Trinity_ID", "uninfected_cold", "infected_cold", "uninfected_warm", "infected_warm")
+colnames(data) <- c("Trinity_ID", "uninfected_decreased", "infected_decreased", "uninfected_elevated", "infected_elevated")
 head(data)
 ```
 
@@ -378,7 +378,7 @@ head(contrtempdegs_counts_match.heatmap)
 
 Pull out just the sample count data:
 ```{r}
-contrtempdegs_counts_match.heatmap <- select(contrtempdegs_counts_match.heatmap, uninfected_cold, infected_cold, uninfected_warm, infected_warm)
+contrtempdegs_counts_match.heatmap <- select(contrtempdegs_counts_match.heatmap, uninfected_decreased, infected_decreased, uninfected_elevated, infected_elevated)
 head(contrtempdegs_counts_match.heatmap)
 ```
 
@@ -389,7 +389,7 @@ head(noz_contrtempdegs_counts_match.heatmap)
 ```
 
 ```{r}
-pheatmap(noz_contrtempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 15, fontsize_row = 12)
+pheatmap(noz_contrtempdegs_counts_match.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurpleOrange, fontsize_col = 12, fontsize_row = 12)
 ```
 
 123 DEGs - genes that are to do with infection that are influenced by temperature
