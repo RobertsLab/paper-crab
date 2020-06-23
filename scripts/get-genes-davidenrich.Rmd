@@ -1,0 +1,169 @@
+---
+title: "get genes from enriched processes"
+output: html_document
+---
+Rmd to get list of genes that contribute to the 15 enriched terms. 
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(stringr)
+```
+
+## Upload files:
+
+List of DEGs (123) of infection status influenced by temperature:
+```{r}
+contrtemp_degs <- read.delim("../analyses/DEGlist-contrast-temp-libs8-11_counts.tab", sep = '\t')
+head(contrtemp_degs)
+```
+
+Upload GO database: 
+```{r}
+uniprot_SPgo <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_SPgo)
+```
+
+
+Rename some columns: 
+```{r}
+colnames(uniprot_SPgo) <- c("uniprot_acc_ID", "entry_name", "review_status", "protein_name", "gene_name", "organism", "length", "V8", "V9", "V10", "V11", "gene_ontology_IDs")
+head(uniprot_SPgo)
+```
+
+upload `blast` output from transcriptome v. 3.1
+```{r}
+blastout <- read.delim("../analyses/_blast-sep-v3.1.tab", sep = '\t', header = FALSE)
+head(blastout)
+```
+
+Rename some columns so that this file can be `join`-ed with the uniprot-SP-Go:
+```{r}
+colnames(blastout) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "entry_name", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blastout)
+```
+
+## Annotate the DEG list:
+`join` the deg list with the blast output by "Trinity_ID"
+```{r}
+degs_annot <- left_join(contrtemp_degs, blastout, by = "Trinity_ID")
+head(degs_annot)
+```
+
+### Get GO information for DEG list:
+`join` the GO database with the annotated DEG list by "Entry"
+```{r}
+degs_annot_GO <- left_join(degs_annot, uniprot_SPgo, by = "entry_name")
+head(degs_annot_GO)
+```
+
+Pull out list of genes to do with some of the enriched terms (https://github.com/RobertsLab/paper-crab/blob/master/analyses/contrast_temp-DAVID.txt)
+
+lipid storage (GO:GO:0019915)
+```{r}
+lipid <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0019915"))
+head(lipid)
+```
+It's E3 ubiquitin protein ligase!! 
+
+head involution (GO:0008258)
+```{r}
+invol <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0008258"))
+head(invol)
+```
+higher in warm --> apoptotic process --> Protein scylla (Protein regulated in development and DNA damage response 2)
+
+antennal morphogenesis (GO:0048800)
+```{r}
+antenn <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0048800"))
+head(antenn)
+```
+higher in cold: protein furry (fruit fly)
+
+wing disc dorsal/ventral pattern (GO:0048190)
+```{r}
+wingdv <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0048190"))
+head(wingdv)
+```
+E3 ubiquitin (top) higher in cold
+trithorax group protein osa (bottom) higher in warm 
+both drosophila
+
+imaginal disc-derived wing morphogenesis (GO:0007476)
+```{r}
+imgwing <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0007476"))
+head(imgwing)
+```
+drosophila
+
+female germline ring canal formation (GO:0007301)
+```{r}
+fem <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0007301"))
+head(fem)
+```
+higher in warm - fruit fly 
+response to ethanol 
+
+transcription DNA-templated (GO:0006351)
+```{r}
+trnsdna <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0006351"))
+head(trnsdna)
+```
+3 in fruit fly
+
+determination of adult lifespan (GO:0008340)
+```{r}
+adult <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0008340"))
+head(adult)
+```
+higher in warm - fruit fly
+
+GO:0035317~imaginal disc-derived wing hair organization
+```{r}
+winghair <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0035317"))
+head(winghair)
+```
+higher in cold fruit fly 
+
+GO:0007379~segment specification
+```{r}
+seg <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0007379"))
+head(seg)
+```
+both hgiher in warm --> both fruit fly 
+
+GO:0060439~trachea morphogenesis
+```{r}
+trachea <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0060439"))
+head(trachea)
+```
+
+GO:0030036~actin cytoskeleton organization
+```{r}
+cyto <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0030036"))
+head(cyto)
+```
+hgiher in warm --> mouse 
+
+
+
+GO:0008586~imaginal disc-derived wing vein morphogenesis
+```{r}
+wingvein <- degs_annot_GO %>%
+  filter(str_detect(gene_ontology_IDs, "GO:0008586"))
+head(wingvein)
+```
+top cold - fruit fly - ubiquitin protein ligase 
+
