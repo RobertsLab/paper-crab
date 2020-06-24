@@ -434,7 +434,7 @@ head(contrasttemp.clust)
 Cluster 1 --> warm                
 Cluster 2 --> cold          
 
-# `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 1.5)
+# `join` count data files with cluster numbers with the `DESeq2` results, and `blast` annotation and GO annotation (from transcirptome v. 3.1)
 
 ## `join` the transcriptome v. 3.1 `blast` output with GO annotations: 
 

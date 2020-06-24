@@ -65,7 +65,7 @@ lipid <- degs_annot_GO %>%
   filter(str_detect(gene_ontology_IDs, "GO:0019915"))
 head(lipid)
 ```
-It's E3 ubiquitin protein ligase!! 
+higher in cold - It's E3 ubiquitin protein ligase!! 
 
 head involution (GO:0008258)
 ```{r}
@@ -99,7 +99,7 @@ imgwing <- degs_annot_GO %>%
   filter(str_detect(gene_ontology_IDs, "GO:0007476"))
 head(imgwing)
 ```
-drosophila
+top higher in warm, bottom higher in cold - drosophila
 
 female germline ring canal formation (GO:0007301)
 ```{r}
