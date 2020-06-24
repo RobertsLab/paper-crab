@@ -1,5 +1,0 @@
----
-title: "uniprot accession IDs v3.1 libraries 8-11"
-output: html_document
----
-Rmd to get uniprot accession IDs that are 
