@@ -1,0 +1,110 @@
+---
+title: "indiv-crabs-timeseries"
+output: html_document
+---
+Rmd to figure out clustering of genes over time in individual crabs. Using counts from transcriptome v 3.1 
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(pheatmap)
+library(data.table)
+library(RColorBrewer)
+```
+
+Load in data of counts from individual crab RNAseq (transcriptome v 3.1):   
+```{r}
+norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
+head(norm_counts)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(norm_counts) <- norm_counts$X #set Trinity IDs as rownames
+norm_counts.rown <- norm_counts[,-1] #remove redundant column
+head(norm_counts.rown)
+```
+
+ROUND INTEGERS UP:
+```{r}
+norm_counts.rown <- round(norm_counts.rown,0)
+head(norm_counts.rown)
+```
+
+Set rownames as a column again:     
+```{r}
+norm_cts <- tibble::rownames_to_column(norm_counts.rown, "Trinity_ID")
+head(norm_cts)
+```
+
+Rename sample columns: 
+```{r}
+colnames(norm_cts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(norm_cts)
+```
+
+### Subset samples from 1 crab (crab A)
+```{r}
+crabA <- select(norm_cts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabA_noz <- crabA[rowSums(crabA[, -1] >0) !=0, ]
+head(crabA_noz)
+```
+Now 16,427 rows. 
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabA_noz$sums <- rowSums( crabA_noz[,2:4] )
+head(crabA_noz)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabA_highcts <- filter(crabA_noz, sums >= 55)
+head(crabA_highcts)
+```
+Now it's 3,504 rows. 
+
+### Make a heatmap of the list of 3504 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabA_heatmap <- select(crabA_highcts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA_heatmap)
+```
+
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabA_heatmap) <- crabA_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabA.heatmap <- crabA_heatmap[,-1] #remove redundant column
+head(crabA.heatmap)
+```
+
+Transform data:
+```{r}
+crabA.heatmap <- sqrt(crabA.heatmap)
+head(crabA.heatmap)
+```
+
+Create heatmap colors:
+```{r}
+heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
+```
+
+
+```{r}
+pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
+```
+
+```{r}
+my_hclust_gene <- hclust(dist(crabA.heatmap), method = "complete")
+as.dendrogram(my_hclust_gene) %>%
+  plot(horiz = TRUE)
+```
+
+
