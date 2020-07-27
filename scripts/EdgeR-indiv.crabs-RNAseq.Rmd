@@ -1,0 +1,10 @@
+---
+title: "EdgeR-indiv.crabs-get-log-CPM"
+output: html_document
+---
+Rmd to get log CPM data for individual crab RNAseq using `EdgeR`. Transformed data will be used with `WGCNA`. 
+
+
+
+
+
