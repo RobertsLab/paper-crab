@@ -4,10 +4,17 @@ output: html_document
 ---
 Rmd to perform WGCNA with individual crab RNAseq datasets (transcriptome v 3.1). 
 
+Based on tutorials from WGCNA package and script by Yaamini V. : https://github.com/eimd-2019/project-EWD-transcriptomics/blob/master/analyses/WGCNA/WGCNA.md
+
 https://www.biostars.org/p/280650/     
 According to the above on bioconductor, I will:    
 - remove counts that are consistently low (remove those that have a count less than 10)          
 - Transform data --> either vst (`DESeq2` package), or use normalized counts and log-transform using log2(x+1)           
+ 
+Install packages:
+```{r}
+#install.packages("dichromat")
+```
  
 Load packages:         
 ```{r}
@@ -16,77 +23,72 @@ library(tidyverse)
 library(DESeq2)
 library(WGCNA)
 library(data.table)
+library(dichromat)
 ```
 
-### Read in normalized count data from individual crab RNAseq (transcriptome v 3.1):      
 ```{r}
-norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
-head(norm_counts)
-```
-\
-Set Trinity_ID as row names:
-```{r}
-rownames(norm_counts) <- norm_counts$X #set Trinity IDs as rownames
-norm_counts.rown <- norm_counts[,-1] #remove redundant column
-head(norm_counts.rown)
+options(stringsAsFactors = FALSE) #Important setting to include from tutorial
 ```
 
-
-ROUND INTEGERS UP:
+## Obtain session info:
 ```{r}
-norm_counts.rown <- round(norm_counts.rown,0)
-head(norm_counts.rown)
+sessionInfo()
 ```
 
-### Transform data 
-Can do vst (from `DESeq2`) or log2(x+1).     
-
-I'll start with log2(x+1) because it's less code than vst.    
+## Format Data
+### Read in logCPM count data from individual crab RNAseq (transcriptome v 3.1):      
 ```{r}
-norm_cts <- log2(norm_counts.rown + 1)
-head(norm_cts)
-```
-
-Going to remove all rows that have "0" for all samples: 
-```{r}
-noz_norm_cts <- norm_cts[rowSums(norm_cts[, -1] >0) !=0, ]
-head(noz_norm_cts)
+crablogCPM <- read.delim("../analyses/ind.crabs.logCPM.txt", header = TRUE)
+head(crablogCPM)
 ```
 
 Set rownames as a column again:     
 ```{r}
-noz_norm_cts <- tibble::rownames_to_column(noz_norm_cts, "Trinity_ID")
-head(noz_norm_cts)
+crablogCPM <- tibble::rownames_to_column(crablogCPM, "Trinity_ID")
+head(crablogCPM)
 ```
 
-Rename sample columns: 
+
+Transpose dataframe so that samples are rows and genes are columns:
 ```{r}
-colnames(noz_norm_cts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
-head(noz_norm_cts)
+crabExpr0 <- as.data.frame(t(crablogCPM[,-1]))
+names(crabExpr0) <- crablogCPM$Trinity_ID
+head(crabExpr0)
 ```
 
-_Remove rows with values less than 10 in more than 90% of samples (row sums =< 216._
-
-Sum all rows in new column:     
+### Check for missing values and outliers:
 ```{r}
-#norm_cts$sums <- rowSums( norm_cts[,2:25] )
-#head(norm_cts)
+gsg <- goodSamplesGenes(crabExpr0, verbose = 3) #check for genes and samples with too many missing values
 ```
-
-Remove columns with sums <= 216
 ```{r}
-#norm_cts2 <- filter(norm_cts, sums >= 216)
-#head(norm_cts2)
+gsg$allOK #TRUE = all genes have passed and can continue
 ```
-only 17 rows. Comment out the above work. Instead I'll just remove rows that have 0s all the way across in whatever sample subset I do. 
 
-### Using WGCNA with RNA seq data     
-https://www.frontiersin.org/articles/10.3389/fphys.2019.00278/full    
+```{r}
+sampleTree <- hclust(dist(crabExpr0), method = "average") #create dendrogram to visually inspect for outliers
+plot(sampleTree)
+```
+Crab D 17 and Crab B 2 are obvious outliers.          
+Crab D 0 and Crab A 17 are also kind of outliers... 
 
-https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/faq.html 
+I'll just keep going and come back to this. will likely remove outliers. 
 
-Notes from WGCNA FAQ (RNAseq data specifically):    
-- remove features with count data of less than 10 in more than 90% of samples
+### Create clinical trait data matrix:
+```{r}
+#crabTraits <- data.frame()
+```
+I'll come  back to this later.
+
+### Network connection and module detection
+
+
+
+
+
+
+
+
+
 
 
 
