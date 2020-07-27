@@ -4,6 +4,124 @@ output: html_document
 ---
 Rmd to get log CPM data for individual crab RNAseq using `EdgeR`. Transformed data will be used with `WGCNA`. 
 
+```{r}
+library(edgeR)
+```
+
+Read in matrix of factors called "targets.txt". 
+```{r}
+targets <- readTargets("../analyses/targets.txt")
+targets
+```
+Sample IDs in column "X" describe time of sampling. 
+
+Set groups equal to time differences:
+```{r}
+group <- targets$Infection_Temp
+group <- as.factor(group)
+group
+```
+
+Import raw data. 
+```{r}
+### Read in normalized count data from individual crab RNAseq (transcriptome v 3.1):      
+rawdata <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
+colnames(rawdata) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(rawdata)
+```
+
+Set Trinity_IDs as row names:
+```{r}
+rownames(rawdata) <- rawdata$Trinity_ID #set Trinity IDs as rownames
+rawdata <- rawdata[,-1] #remove redundant column
+head(rawdata)
+```
+
+### Make DGE list:
+```{r}
+y <- DGEList(counts = rawdata[,1:24],group = group)
+head(y$counts)
+```
+
+### Filter out lowly expressed genes:
+Smallest group size is 2. 
+Going to remove all rows that have "0" for all samples: 
+```{r}
+rawdata <- rawdata[rowSums(rawdata[, -1] >0) !=0, ]
+head(rawdata)
+```
+
+```{r}
+keep <- rowSums(cpm(y)>1) >= 3
+y <- y[keep,]
+dim(y)
+```
+keep 23,830 genes in 24 libraries
+
+Compute the new library sizes:
+```{r}
+y$samples$lib.size <- colSums(y$counts)
+```
+
+### Calculate normalization factors:
+```{r}
+y <- calcNormFactors(y)
+y$samples
+```
+
+```{r}
+n <- y$samples$lib.size
+```
+
+### examining samples for outliers
+```{r}
+points <- c(0,1,2,3)
+colors <- (rep(c("blue", "red"), 2))
+plotMDS(y, col = colors[group], pch=points[group])
+legend ("top", legend = levels(group), pch = points, col = colors, ncol = 2)
+```
+
+```{r}
+design <- model.matrix(~0+group)
+colnames(design) <- levels(group)
+design
+```
+
+```{r}
+y <- estimateGLMCommonDisp(y, design, verbose = TRUE)
+y <- estimateGLMTrendedDisp(y, design)
+y <- estimateGLMTagwiseDisp(y, design)
+plotBCV(y)
+```
+
+```{r}
+fit <- glmQLFit(y ,design)
+design
+colnames(fit)
+```
+
+### estimating dispersion:
+```{r}
+y <- estimateDisp(y, design, robust = TRUE)
+y$common.dispersion
+#4.473469
+plotBCV(y)
+```
+
+get counts into log CPM:
+```{r}
+logCPM <- cpm(y, prior.count = 2, log = TRUE)
+head(logCPM)
+write.table(logCPM, "../analyses/ind.crabs.logCPM.txt", sep = '\t')
+```
+
+
+
+
+
+
+
+
 
 
 
