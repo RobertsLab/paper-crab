@@ -97,7 +97,11 @@ heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
 ```
 
 ```{r}
-pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+heatmapRdGy <- RColorBrewer::brewer.pal(11, "RdGy")
+```
+
+```{r}
+pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdGy, fontsize_col = 12, fontsize_row = 12)
 ```
 
 Goal: pull out clusters of genes and describe and annotate. For example, cluster 1 --> in crab A goes zero, up, down over time. Then describe those genes (`join` with BLAST output from transcriptome v 3.1 and uniprot-sprot database info.)
@@ -105,7 +109,7 @@ Goal: pull out clusters of genes and describe and annotate. For example, cluster
 ### Get genes in those clusters that change over time:
 Set heatmap as an object:
 ```{r}
-Aheatmap <- pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+Aheatmap <- pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdGy, fontsize_col = 12, fontsize_row = 12)
 ```
 
 Extract clusters from the heatmap. 
@@ -129,11 +133,60 @@ head(clusters)
 ```
 
 ```{r}
-pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clusters, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clusters, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapRdGy, fontsize_col = 12, fontsize_row = 12)
+```
+
+### `join` sample count data for Crab A with transcriptome v 3.1 `blast` output and uniprot-sp-GO info, and keep the column of cluster labels. Write out to analyses. 
+
+CrabA.clust --> heatmap counts with Trinity IDs as row names with cluster numbers. 
+
+Read in transcriptome v 3.1 `blast` output:     
+(_blast-sep-v3.1.tab: separates out the pipes and tabs- better to `join` with)
+```{r}
+blast <- read.delim("../analyses/_blast-sep-v3.1.tab", header = FALSE)
+head(blast)
+```
+
+Rename first and third column: 
+```{r}
+colnames(blast) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blast)
 ```
 
 
+Read in uniprot-SP-GO file
+```{r}
+uniprot_SP_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_SP_GO)
+```
 
+Rename columns:
+```{r}
+colnames(uniprot_SP_GO) <- c("uniprot_acc_ID", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12")
+head(uniprot_SP_GO)
+```
+
+`join` blast output and uniprot-SP-GO:
+```{r}
+blastGO <- left_join(blast, uniprot_SP_GO, by = "uniprot_acc_ID")
+head(blastGO)
+```
+
+Make Trinity ID rownames into a column called "Trinity_ID" in CrabA.clust:
+Set Trinity_ID as row names:
+Set rownames as a column again:     
+```{r}
+CrabA.clust <- tibble::rownames_to_column(CrabA.clust, "Trinity_ID")
+head(CrabA.clust)
+```
+
+`join` the CrabA.clust and blastGO file based on "Trinity_ID" column:
+```{r}
+crabA.blast.GO <- left_join(CrabA.clust, blastGO, by = "Trinity_ID")
+head(crabA.blast.GO)
+```
+
+Way too many NAs....
 
 
 
