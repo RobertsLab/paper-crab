@@ -37,6 +37,7 @@ sessionInfo()
 
 ## Format Data
 ### Read in logCPM count data from individual crab RNAseq (transcriptome v 3.1):      
+File was created in Rmd called "EdgeR-indiv.crabs-RNAseq.Rmd"
 ```{r}
 crablogCPM <- read.delim("../analyses/ind.crabs.logCPM.txt", header = TRUE)
 head(crablogCPM)
@@ -73,13 +74,51 @@ Crab D 0 and Crab A 17 are also kind of outliers...
 
 I'll just keep going and come back to this. will likely remove outliers. 
 
-### Create clinical trait data matrix:
+### Create trait data matrix:    
+Eelgrass project just has 2 differences between samples: exposed to Laby and unexposed. 
+
+This project has time (in sample name), infection status... all except crab E are infected, and temperature - 3 at ambient, 3 at decreased, and 3 at elevated... How should I do this data matrix? 
+
+I made a .csv in excel called "traits". read it in: 
 ```{r}
-#crabTraits <- data.frame()
+crabtraits <- read.csv("../analyses/crab.indiv.traits.csv")
+head(crabtraits)
 ```
-I'll come  back to this later.
+Make column "X" the rownames: 
+Set Trinity_ID as row names:
+```{r}
+rownames(crabtraits) <- crabtraits$X #set Trinity IDs as rownames
+crabtraits <- crabtraits[,-1] #remove redundant column
+head(crabtraits)
+```
+
+```{r}
+sampleTree2 <- hclust(dist(crabExpr0), method = "average") #create dendrogram to look at sample and trait clustering
+traitColors <- numbers2colors(crabtraits, signed = FALSE) #convert traits to color values
+plotDendroAndColors(sampleTree2, traitColors,
+                    groupLabels = names(crabtraits)) #plot dendrogram
+```
+
+Save expression and trait data:
+```{r}
+save(crabExpr0, crabtraits, file = "../analyses/indiv.crab-WGCNA-dataInput.RData")
+```
 
 ### Network connection and module detection
+
+#### Determine soft-thresholding power
+load data input from previous section:
+```{r}
+#cnames <- load(file = "../analyses/indiv.crab-WGCNA-dataInput.RData")
+```
+
+```{r}
+#powers <- c(c(1:10), seq(from = 12, to = 20, by = 2)) #create a set of soft-thresholding powers
+#sft <- pickSoftThreshold(crabExpr0, powerVector = powers, verbose = 5) #use the network topology analysis funciton to evaluate soft-thresholding power values
+```
+COMPUTER crashed with the above code, so I'll comment it out. 
+
+
 
 ### Topological Overlap Matrix (TOM)
 
