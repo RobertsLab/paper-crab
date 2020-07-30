@@ -1,0 +1,140 @@
+---
+title: "individual-crab-genes-over-time"
+output: html_document
+---
+Rmd to get genes that change over time within individual crab RNA seq. 
+
+Will start by making heatmaps of top genes (based on a cut-off threshold that `pheatmap` can handle in terms of number of rows) and then pull out the clusters of genes, and annotate. 
+
+Using count data from transcriptome v 3.1.
+
+
+### Load packages:
+```{r}
+library(dplyr)
+library(tidyverse)
+library(pheatmap)
+library(data.table)
+library(RColorBrewer)
+```
+
+### Load in data of counts from individual crab RNAseq (transcriptome v 3.1):   
+```{r}
+norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
+head(norm_counts)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(norm_counts) <- norm_counts$X #set Trinity IDs as rownames
+norm_counts <- norm_counts[,-1] #remove redundant column
+head(norm_counts)
+```
+
+ROUND INTEGERS UP:
+```{r}
+norm_counts <- round(norm_counts,0)
+head(norm_counts)
+```
+
+Set rownames as a column again:     
+```{r}
+norm_counts <- tibble::rownames_to_column(norm_counts, "Trinity_ID")
+head(norm_counts)
+```
+
+Rename sample columns: 
+```{r}
+colnames(norm_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(norm_counts)
+```
+
+### Subset samples from 1 crab (crab A)
+```{r}
+crabA <- select(norm_counts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabA <- crabA[rowSums(crabA[, -1] >0) !=0, ]
+head(crabA)
+```
+Now there's 16,427 genes 
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabA$sums <- rowSums( crabA[,2:4] )
+head(crabA)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabA_highcts <- filter(crabA, sums >= 55)
+head(crabA_highcts)
+```
+Now there's 2,668 rows
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabA_heatmap <- select(crabA_highcts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA_heatmap)
+```
+
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabA_heatmap) <- crabA_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabA_heatmap <- crabA_heatmap[,-1] #remove redundant column
+head(crabA_heatmap)
+```
+
+Create heatmap colors:
+```{r}
+heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
+```
+
+```{r}
+pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+Goal: pull out clusters of genes and describe and annotate. For example, cluster 1 --> in crab A goes zero, up, down over time. Then describe those genes (`join` with BLAST output from transcriptome v 3.1 and uniprot-sprot database info.)
+
+### Get genes in those clusters that change over time:
+Set heatmap as an object:
+```{r}
+Aheatmap <- pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+Extract clusters from the heatmap. 
+```{r}
+CrabA.clust <- cbind(crabA_heatmap,
+                   cluster = cutree(Aheatmap$tree_row,
+                                     k = 8))
+head(CrabA.clust)
+```
+
+pull out just cluster column:
+```{r}
+clusters <- select(CrabA.clust, "cluster")
+head(clusters)
+```
+
+Rename the clusters in the rows to "cluster #" instead of just the number. 
+```{r}
+clusters <- data.frame(cluster = ifelse(clusters == 1, "cluster 1", ifelse(clusters == 2, "cluster 2", ifelse(clusters == 3, "cluster 3", ifelse(clusters ==4, "cluster 4", ifelse(clusters == 5, "cluster 5", ifelse(clusters == 6, "cluster 6", ifelse(clusters == 7, "cluster 7", "cluster 8"))))))))
+head(clusters)
+```
+
+```{r}
+pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clusters, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+
+
+
+
+
+

@@ -68,9 +68,9 @@ Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I trouble
 crabA_highcts <- filter(crabA_noz, sums >= 55)
 head(crabA_highcts)
 ```
-Now it's 3,504 rows. 
+Now it's 2668 rows. 
 
-### Make a heatmap of the list of 3504 genes:
+### Make a heatmap of the list of 2668 genes:
 Need to remove the "sums" column for heatmap:     
 ```{r}
 crabA_heatmap <- select(crabA_highcts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
@@ -87,8 +87,8 @@ head(crabA.heatmap)
 
 Transform data:
 ```{r}
-crabA.heatmap <- sqrt(crabA.heatmap)
-head(crabA.heatmap)
+#crabA.heatmap <- sqrt(crabA.heatmap)
+#head(crabA.heatmap)
 ```
 
 Create heatmap colors:
@@ -98,13 +98,197 @@ heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
 
 
 ```{r}
-pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 20, fontsize_row = 12)
+pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
 ```
 
+fix arguments for this to get it to match the dendrogram in the heatmap
+dendrogram for the 16427 genes that were in crab a at time points 0 2 and 17 (removed rows where there was zero across all samples): 
 ```{r}
 my_hclust_gene <- hclust(dist(crabA.heatmap), method = "complete")
 as.dendrogram(my_hclust_gene) %>%
   plot(horiz = TRUE)
+#?hclust
 ```
+
+
+Set heatmap as an object:
+```{r}
+Aheatmap <- pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+Extract clusters from the heatmap. Let's say 3...?
+```{r}
+CrabA.clust <- cbind(crabA.heatmap,
+                   cluster = cutree(Aheatmap$tree_row,
+                                     k = 4))
+head(CrabA.clust)
+```
+
+pull out just cluster column:
+```{r}
+clusters <- select(CrabA.clust, "cluster")
+head(clusters)
+```
+
+```{r}
+clusters <- ifelse(clusters$cluster == 1 )
+head(clusters)
+```
+
+```{r}
+pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clusters, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 30, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+
+
+
+
+
+
+
+
+
+### Subset samples from 1 crab Crab A and Crab D
+```{r}
+crabAD <- select(norm_cts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17", "CrabD_0", "CrabD_2", "CrabD_17")
+head(crabAD)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabAD_noz <- crabAD[rowSums(crabA[, -1] >0) !=0, ]
+head(crabAD_noz)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabAD_noz$sums <- rowSums( crabAD_noz[,2:4] )
+head(crabAD_noz)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabAD_highcts <- filter(crabAD_noz, sums >= 55)
+head(crabAD_highcts)
+```
+
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabAD_heatmap <- select(crabAD_highcts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17", "CrabD_0", "CrabD_2", "CrabD_17")
+head(crabAD_heatmap)
+```
+
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabAD_heatmap) <- crabAD_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabAD.heatmap <- crabAD_heatmap[,-1] #remove redundant column
+head(crabAD.heatmap)
+```
+
+```{r}
+pheatmap(crabAD.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+```{r}
+ADheatmap <- pheatmap(crabAD.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+
+```{r}
+CrabAD.clust <- cbind(crabAD.heatmap,
+                   cluster = cutree(ADheatmap$tree_row,
+                                     k = 4))
+head(CrabAD.clust)
+```
+
+pull out just cluster column:
+```{r}
+clustersAD <- select(CrabAD.clust, "cluster")
+head(clustersAD)
+```
+
+```{r}
+pheatmap(crabAD.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clustersAD, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 30, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+# Try with logCPM counts from `EdgeR`
+### Read in logCPM count data from individual crab RNAseq (transcriptome v 3.1):      
+```{r}
+crablogCPM <- read.delim("../analyses/ind.crabs.logCPM.txt", header = TRUE)
+head(crablogCPM)
+```
+
+Set rownames as a column again:     
+```{r}
+crablogCPM <- tibble::rownames_to_column(crablogCPM, "Trinity_ID")
+head(crablogCPM)
+```
+
+Subset out some columns:
+```{r}
+crabA.CPM_heatmap <- select(crablogCPM, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA.CPM_heatmap)
+```
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabA.CPM_heatmap) <- crabA.CPM_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabA.CPM_heatmap <- crabA.CPM_heatmap[,-1] #remove redundant column
+head(crabA.CPM_heatmap)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabA.CPM_heatmap$sums <- rowSums( crabA.CPM_heatmap[,1:3] )
+head(crabA.CPM_heatmap)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabA.CPM_heatmap2 <- filter(crabA.CPM_heatmap, sums >= 5)
+head(crabA.CPM_heatmap2)
+```
+
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabA.CPM.heatmap <- select(crabA.CPM_heatmap2, "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA.CPM.heatmap)
+```
+
+```{r}
+pheatmap(crabA.CPM.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+```{r}
+A.CPM_heatmap <- pheatmap(crabA.CPM.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+Extract clusters from the heatmap. Let's say 2...?
+```{r}
+CrabA.CPM.clust <- cbind(crabA.CPM.heatmap,
+                   cluster = cutree(A.CPM_heatmap$tree_row,
+                                     k = 2))
+head(CrabA.CPM.clust)
+```
+
+pull out just cluster column:
+```{r}
+clustersA.CPM <- select(CrabA.CPM.clust, "cluster")
+head(clustersA.CPM)
+```
+
+```{r}
+clustersA.CPM <- data.frame(cluster = ifelse(clustersA.CPM$cluster == 1, yes = "cluster 1", no = "cluster 2"))
+head(clustersA.CPM)
+```
+
+```{r}
+pheatmap(crabA.CPM.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clustersA.CPM, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapPurOr, fontsize_col = 12, fontsize_row = 12)
+```
+
+
 
 

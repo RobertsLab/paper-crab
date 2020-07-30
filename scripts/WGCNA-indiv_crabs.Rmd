@@ -42,7 +42,7 @@ crablogCPM <- read.delim("../analyses/ind.crabs.logCPM.txt", header = TRUE)
 head(crablogCPM)
 ```
 
-Set rownames as a column again:     
+Set rownames as a column:     
 ```{r}
 crablogCPM <- tibble::rownames_to_column(crablogCPM, "Trinity_ID")
 head(crablogCPM)
@@ -81,6 +81,7 @@ I'll come  back to this later.
 
 ### Network connection and module detection
 
+### Topological Overlap Matrix (TOM)
 
 
 
