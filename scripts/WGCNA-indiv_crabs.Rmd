@@ -109,12 +109,12 @@ save(crabExpr0, crabtraits, file = "../analyses/indiv.crab-WGCNA-dataInput.RData
 #### Determine soft-thresholding power
 load data input from previous section:
 ```{r}
-#cnames <- load(file = "../analyses/indiv.crab-WGCNA-dataInput.RData")
+cnames <- load(file = "../analyses/indiv.crab-WGCNA-dataInput.RData")
 ```
 
 ```{r}
-#powers <- c(c(1:10), seq(from = 12, to = 20, by = 2)) #create a set of soft-thresholding powers
-#sft <- pickSoftThreshold(crabExpr0, powerVector = powers, verbose = 5) #use the network topology analysis funciton to evaluate soft-thresholding power values
+powers <- c(c(1:10), seq(from = 12, to = 20, by = 2)) #create a set of soft-thresholding powers
+sft <- pickSoftThreshold(crabExpr0, powerVector = powers, verbose = 5) #use the network topology analysis funciton to evaluate soft-thresholding power values
 ```
 COMPUTER crashed with the above code, so I'll comment it out. 
 
