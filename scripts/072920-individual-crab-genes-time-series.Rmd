@@ -18,6 +18,32 @@ library(data.table)
 library(RColorBrewer)
 ```
 
+## Read in datasets
+Read in BLAST results from transcriptome v 3.1
+```{r}
+blast <- read.delim("../analyses/_blast-sep-v3.1.tab", header = FALSE)
+head(blast)
+```
+
+Rename first and third column: 
+```{r}
+colnames(blast) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
+head(blast)
+```
+
+Read in uniprot-SP-GO file
+```{r}
+uniprot_SP_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
+head(uniprot_SP_GO)
+```
+
+Rename columns:
+```{r}
+colnames(uniprot_SP_GO) <- c("uniprot_acc_ID", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12")
+head(uniprot_SP_GO)
+```
+
+
 ### Load in data of counts from individual crab RNAseq (transcriptome v 3.1):   
 ```{r}
 norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix")
@@ -49,7 +75,13 @@ colnames(norm_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC
 head(norm_counts)
 ```
 
-### Subset samples from 1 crab (crab A)
+Set heatmap colors:
+```{r}
+heatmapBrBG <- RColorBrewer::brewer.pal(11, "BrBG")
+```
+
+# Crab A
+### Subset samples from crab A (ambient infected)
 ```{r}
 crabA <- select(norm_counts, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
 head(crabA)
@@ -89,19 +121,6 @@ Set Trinity_ID as row names:
 rownames(crabA_heatmap) <- crabA_heatmap$Trinity_ID #set Trinity IDs as rownames
 crabA_heatmap <- crabA_heatmap[,-1] #remove redundant column
 head(crabA_heatmap)
-```
-
-Create heatmap colors:
-```{r}
-#heatmapPurOr <- RColorBrewer::brewer.pal(11, "PuOr")
-```
-
-```{r}
-#heatmapRdGy <- RColorBrewer::brewer.pal(11, "RdGy")
-```
-
-```{r}
-heatmapBrBG <- RColorBrewer::brewer.pal(11, "BrBG")
 ```
 
 ```{r}
@@ -146,32 +165,6 @@ pheatmap(crabA_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE,
 
 CrabA.clust --> heatmap counts with Trinity IDs as row names with cluster numbers. 
 
-Read in transcriptome v 3.1 `blast` output:     
-(_blast-sep-v3.1.tab: separates out the pipes and tabs- better to `join` with)
-```{r}
-blast <- read.delim("../analyses/_blast-sep-v3.1.tab", header = FALSE)
-head(blast)
-```
-
-Rename first and third column: 
-```{r}
-colnames(blast) <- c("Trinity_ID", "V2", "uniprot_acc_ID", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14")
-head(blast)
-```
-
-
-Read in uniprot-SP-GO file
-```{r}
-uniprot_SP_GO <- read.delim("http://owl.fish.washington.edu/halfshell/bu-alanine-wd/17-07-20/uniprot-SP-GO.sorted", sep = '\t', header = FALSE)
-head(uniprot_SP_GO)
-```
-
-Rename columns:
-```{r}
-colnames(uniprot_SP_GO) <- c("uniprot_acc_ID", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12")
-head(uniprot_SP_GO)
-```
-
 `join` blast output and uniprot-SP-GO:
 ```{r}
 blastGO <- left_join(blast, uniprot_SP_GO, by = "uniprot_acc_ID")
@@ -194,8 +187,156 @@ head(crabA.blast.GO)
 
 write out as a table:
 ```{r}
-write.table(crabA.blast.GO, "../analyses/crabA.clust.BLAST-GO.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+#write.table(crabA.blast.GO, "../analyses/crabA.clust.BLAST-GO.tab", sep = '\t', row.names = FALSE, quote = FALSE)
 ```
+Comment out 8/6/2020 because already wrote out file to analyses. 
+
+# Crab B
+## Subset samples for Crab B (ambient infected)
+```{r}
+crabB <- select(norm_counts, "Trinity_ID", "CrabB_0", "CrabB_2", "CrabB_17")
+head(crabB)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabB <- crabB[rowSums(crabB[, -1] >0) !=0, ]
+head(crabB)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabB$sums <- rowSums( crabB[,2:4] )
+head(crabB)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabB_highcts <- filter(crabB, sums >= 28)
+head(crabB_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabB_heatmap <- select(crabB_highcts, "Trinity_ID", "CrabB_0", "CrabB_2", "CrabB_17")
+head(crabB_heatmap)
+```
+
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabB_heatmap) <- crabB_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabB_heatmap <- crabB_heatmap[,-1] #remove redundant column
+head(crabB_heatmap)
+```
+
+```{r}
+pheatmap(crabB_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+6617 genes
+
+# Crab C
+## Subset samples from Crab C (ambient infected)
+
+```{r}
+crabC <- select(norm_counts, "Trinity_ID", "CrabC_0", "CrabC_2", "CrabC_17")
+head(crabC)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabC <- crabC[rowSums(crabC[, -1] >0) !=0, ]
+head(crabC)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabC$sums <- rowSums( crabC[,2:4] )
+head(crabC)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabC_highcts <- filter(crabC, sums >= 49)
+head(crabC_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabC_heatmap <- select(crabC_highcts, "Trinity_ID", "CrabC_0", "CrabC_2", "CrabC_17")
+head(crabC_heatmap)
+```
+
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabC_heatmap) <- crabC_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabC_heatmap <- crabC_heatmap[,-1] #remove redundant column
+head(crabC_heatmap)
+```
+
+```{r}
+pheatmap(crabC_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+2384 genes
+
+# Crab D
+## Subset samples for Crab D (decreased infected)
+
+```{r}
+crabD <- select(norm_counts, "Trinity_ID", "CrabD_0", "CrabD_2", "CrabD_17")
+head(crabD)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabD <- crabD[rowSums(crabD[, -1] >0) !=0, ]
+head(crabD)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabD$sums <- rowSums( crabD[,2:4] )
+head(crabD)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabD_highcts <- filter(crabD, sums >= 0)
+head(crabD_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabD_heatmap <- select(crabD_highcts, "Trinity_ID", "CrabD_0", "CrabD_2", "CrabD_17")
+head(crabD_heatmap)
+```
+
+Have to make trinity ID column into rownames:
+Set Trinity_ID as row names:
+```{r}
+rownames(crabD_heatmap) <- crabD_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabD_heatmap <- crabD_heatmap[,-1] #remove redundant column
+head(crabD_heatmap)
+```
+
+```{r}
+pheatmap(crabD_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+can handle all genes. 7409 genes 
+
+# Crab E
+## subset samples for Crab E (decreased UNINFECTED) - only crab with individual RNAseq data that is UNINFECTED
+
+
+
+
 
 
 
