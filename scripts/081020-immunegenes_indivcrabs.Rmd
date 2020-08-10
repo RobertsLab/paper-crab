@@ -1,0 +1,150 @@
+---
+title: "immune-genes-indiv-crabs"
+output: html_document
+---
+Rmd to see what stress response genes match with the genes in the individual crab RNAseq count data. Will be made into heatmaps to see how immune response changes over time. 
+
+### Load packages:
+```{r}
+library(dplyr)
+library(tidyverse)
+library(pheatmap)
+library(data.table)
+library(RColorBrewer)
+```
+
+## Read in files:
+stress response genes from transcriptome v 3.1:
+```{r}
+stress <- read.delim("../analyses/stress-response-genes-tr3.1.tab", sep = '\t', row.names = NULL)
+head(stress)
+```
+
+count data from individual crab RNAseq from transcriptome v 3.1:
+```{r}
+norm_counts <- read.delim("../data/salmon.isoform.TMM.EXPR.matrix", row.names = NULL)
+head(norm_counts)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(norm_counts) <- norm_counts$X #set Trinity IDs as rownames
+norm_counts <- norm_counts[,-1] #remove redundant column
+head(norm_counts)
+```
+
+ROUND INTEGERS UP:
+```{r}
+norm_counts <- round(norm_counts,0)
+head(norm_counts)
+```
+
+Set rownames as a column again:     
+```{r}
+norm_counts <- tibble::rownames_to_column(norm_counts, "Trinity_ID")
+head(norm_counts)
+```
+
+Rename sample columns: 
+```{r}
+colnames(norm_counts) <- c("Trinity_ID", "CrabH_2", "CrabE_2", "CrabI_2", "CrabC_17", "CrabB_17", "CrabG_0", "CrabF_2", "CrabE_0", "CrabG_2", "CrabC_0", "CrabI_0", "CrabD_0", "CrabD_17", "CrabB_0", "CrabC_2", "CrabB_2", "CrabF_17", "CrabA_0", "CrabH_0", "CrabA_17", "CrabD_2", "CrabE_17", "CrabA_2", "CrabF_0")
+head(norm_counts)
+```
+
+
+## `join` the two by the column "Trinity_ID"
+```{r}
+norm_stress <- left_join(norm_counts, stress, by = "Trinity_ID")
+head(norm_stress)
+```
+
+Pull out rows that have "stress response" in the column called "GOslim":
+```{r}
+nstressSubset <- norm_stress[grep("stress", norm_stress$GOslim), ]
+head(nstressSubset)
+```
+930 matches!
+
+Remove numbered rownames:
+```{r}
+rownames(nstressSubset) <- NULL
+head(nstressSubset)
+```
+
+## Make a heatmap of the stress response genes in the individual crabs 
+Set heatmap colors:
+```{r}
+heatmapBrBG <- RColorBrewer::brewer.pal(11, "BrBG")
+```
+
+### Crab A 
+Subset samples for Crab A:
+```{r}
+crabA <- select(nstressSubset, "Trinity_ID", "CrabA_0", "CrabA_2", "CrabA_17")
+head(crabA)
+```
+
+
+Remove rows that have 0s for all samples:
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabA <- crabA[rowSums(crabA[, -1] >0) !=0, ]
+head(crabA)
+```
+372 stress response genes!! 
+
+However, some rows are duplicates. Need to remove:
+```{r}
+crabA.heatmap <- distinct(crabA)
+head(crabA.heatmap)
+```
+217 unique Trinity_IDs 
+
+
+Set Trinity_ID column as row names for a heatmap:
+```{r}
+rownames(crabA.heatmap) <- crabA.heatmap$Trinity_ID #set Trinity IDs as rownames
+crabA.heatmap <- crabA.heatmap[,-1] #remove redundant column
+head(crabA.heatmap)
+```
+
+```{r}
+pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+
+### `join` count data of 217 stress response genes with the annotated stress response genes table (stress) to get what the genes are doing:
+
+make Trinity_IDs into a column again from crabA.heatmap:
+```{r}
+crabA.heatmap <- tibble::rownames_to_column(crabA.heatmap, "Trinity_ID")
+head(crabA.heatmap)
+```
+
+```{r}
+crabA.stress <- left_join(crabA.heatmap, stress, by = "Trinity_ID")
+head(crabA.stress)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
