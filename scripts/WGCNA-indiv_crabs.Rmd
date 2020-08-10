@@ -116,12 +116,34 @@ cnames <- load(file = "../analyses/indiv.crab-WGCNA-dataInput.RData")
 powers <- c(c(1:10), seq(from = 12, to = 20, by = 2)) #create a set of soft-thresholding powers
 sft <- pickSoftThreshold(crabExpr0, powerVector = powers, verbose = 5) #use the network topology analysis funciton to evaluate soft-thresholding power values
 ```
-COMPUTER crashed with the above code, so I'll comment it out. 
 
+```{r}
+plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     xlab = "Soft Threshold (power)", ylab = "Scale Free Topology Model Fit, signed R^2", type = "n", main = paste("Scale Independence")) #plot scale-free topology fit index as a function of the soft-thresholding power 
+text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2], labels = powers, cex = 1, col = "red") #add sft values
+abline(h=0.90, col = "red") #add line corresponding with R^2 cutoff of h=0.90. Lowest power that reaches 0.90 is sft = 5
+```
 
+```{r}
+plot(sft$fitIndices[,1], sft$fitIndices[,5],
+     xlab = "Soft Threshold (power)", ylab = "Mean Connectivity", type = "n", main = paste("Mean Connectivity")) #plot mean connectivity as a function of soft-thresholding power
+text(sft$fitIndices[,1], sft$fitIndices[,5], labels = powers, cex = 1, col = "red") #add sft values. 
+```
+
+I guess 5 is good...
+
+#### Co-expression similarity and adjacency
+```{r}
+softPower <- 5 #set soft power based on plots above
+adjacency <- adjacency(crabExpr0, power = softPower) #calculate adjacencies using softpower = 5
+```
+
+computer crashed twice due to above code chunk. commented out code. 
 
 ### Topological Overlap Matrix (TOM)
-
+```{r}
+TOM <- TOMsimilarity(adjacency)
+```
 
 
 
