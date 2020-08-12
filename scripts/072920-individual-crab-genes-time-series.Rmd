@@ -187,7 +187,7 @@ head(crabA.blast.GO)
 
 write out as a table:
 ```{r}
-#write.table(crabA.blast.GO, "../analyses/crabA.clust.BLAST-GO.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+#write.table(crabA.blast.GO2, "../analyses/crabA.clust.BLAST-GO.tab", sep = '\t', row.names = FALSE, quote = FALSE)
 ```
 Comment out 8/6/2020 because already wrote out file to analyses. 
 
@@ -333,10 +333,225 @@ can handle all genes. 7409 genes
 
 # Crab E
 ## subset samples for Crab E (decreased UNINFECTED) - only crab with individual RNAseq data that is UNINFECTED
+```{r}
+crabE <- select(norm_counts, "Trinity_ID", "CrabE_0", "CrabE_2", "CrabE_17")
+head(crabE)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabE <- crabE[rowSums(crabE[, -1] >0) !=0, ]
+head(crabE)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabE$sums <- rowSums( crabE[,2:4] )
+head(crabE)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabE_highcts <- filter(crabE, sums >= 80)
+head(crabE_highcts)
+```
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabE_heatmap <- select(crabE_highcts, "Trinity_ID", "CrabE_0", "CrabE_2", "CrabE_17")
+head(crabE_heatmap)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(crabE_heatmap) <- crabE_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabE_heatmap <- crabE_heatmap[,-1] #remove redundant column
+head(crabE_heatmap)
+```
+
+```{r}
+pheatmap(crabE_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+
+# Crab F
+## subset samples for Crab E (decreased UNINFECTED) - only crab with individual RNAseq data that is UNINFECTED
+```{r}
+crabF <- select(norm_counts, "Trinity_ID", "CrabF_0", "CrabF_2", "CrabF_17")
+head(crabF)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabF <- crabF[rowSums(crabF[, -1] >0) !=0, ]
+head(crabF)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabF$sums <- rowSums( crabF[,2:4] )
+head(crabF)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabF_highcts <- filter(crabF, sums >= 80)
+head(crabF_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabF_heatmap <- select(crabF_highcts, "Trinity_ID", "CrabF_0", "CrabF_2", "CrabF_17")
+head(crabF_heatmap)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(crabF_heatmap) <- crabF_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabF_heatmap <- crabF_heatmap[,-1] #remove redundant column
+head(crabF_heatmap)
+```
+
+```{r}
+pheatmap(crabF_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
 
 
+# Crab G
+## subset samples for Crab E (decreased UNINFECTED) - only crab with individual RNAseq data that is UNINFECTED
+```{r}
+crabG <- select(norm_counts, "Trinity_ID", "CrabG_0", "CrabG_2")
+head(crabG)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabG <- crabG[rowSums(crabG[, -1] >0) !=0, ]
+head(crabG)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabG$sums <- rowSums( crabG[,2:3] )
+head(crabG)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabG_highcts <- filter(crabG, sums >= 250)
+head(crabG_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabG_heatmap <- select(crabG_highcts, "Trinity_ID", "CrabG_0", "CrabG_2")
+head(crabG_heatmap)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(crabG_heatmap) <- crabG_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabG_heatmap <- crabG_heatmap[,-1] #remove redundant column
+head(crabG_heatmap)
+```
+
+```{r}
+pheatmap(crabG_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+
+## Crab H
+elevated infected
+## subset samples for Crab E (decreased UNINFECTED) - only crab with individual RNAseq data that is UNINFECTED
+```{r}
+crabH <- select(norm_counts, "Trinity_ID", "CrabH_0", "CrabH_2")
+head(crabH)
+```
+
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabH <- crabH[rowSums(crabH[, -1] >0) !=0, ]
+head(crabH)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabH$sums <- rowSums( crabH[,2:3] )
+head(crabH)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabH_highcts <- filter(crabH, sums >= 900)
+head(crabH_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabH_heatmap <- select(crabH_highcts, "Trinity_ID", "CrabH_0", "CrabH_2")
+head(crabH_heatmap)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(crabH_heatmap) <- crabH_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabH_heatmap <- crabH_heatmap[,-1] #remove redundant column
+head(crabH_heatmap)
+```
+
+```{r}
+pheatmap(crabH_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
 
 
+## Crab I 
+elevated infected
+## subset samples for Crab E (decreased UNINFECTED) - only crab with individual RNAseq data that is UNINFECTED
+```{r}
+crabI <- select(norm_counts, "Trinity_ID", "CrabI_0", "CrabI_2")
+head(crabI)
+```
 
+Wayyyy too many genes for a heatmap. Filter out rows that have 0 across all three timepoints:     
+```{r}
+crabI <- crabI[rowSums(crabI[, -1] >0) !=0, ]
+head(crabI)
+```
+
+Now lets remove low-count genes. Say, remove rows where counts across the three samples is less than 10. 
+Sum all rows in new column:         
+```{r}
+crabI$sums <- rowSums( crabI[,2:3] )
+head(crabI)
+```
+
+Remove columns with sums <= 30 --> didn't work. too many rows (3,504). I troubleshooted until coming to the number 55 - 2668 rows, and heatmap worked
+```{r}
+crabI_highcts <- filter(crabI, sums >= 900)
+head(crabI_highcts)
+```
+
+### Make a heatmap of the list of 2668 genes:
+Need to remove the "sums" column for heatmap:     
+```{r}
+crabI_heatmap <- select(crabI_highcts, "Trinity_ID", "CrabI_0", "CrabI_2")
+head(crabI_heatmap)
+```
+
+Set Trinity_ID as row names:
+```{r}
+rownames(crabI_heatmap) <- crabI_heatmap$Trinity_ID #set Trinity IDs as rownames
+crabI_heatmap <- crabI_heatmap[,-1] #remove redundant column
+head(crabI_heatmap)
+```
+
+```{r}
+pheatmap(crabI_heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
 
 

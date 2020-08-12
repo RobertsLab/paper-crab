@@ -112,20 +112,59 @@ head(crabA.heatmap)
 pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
 ```
 
-### `join` count data of 217 stress response genes with the annotated stress response genes table (stress) to get what the genes are doing:
-
-make Trinity_IDs into a column again from crabA.heatmap:
+### Get genes in those clusters that change over time:
+Set heatmap as an object:
 ```{r}
-crabA.heatmap <- tibble::rownames_to_column(crabA.heatmap, "Trinity_ID")
-head(crabA.heatmap)
+Aheatmap <- pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+
+Extract clusters from the heatmap. 
+```{r}
+CrabA.clust <- cbind(crabA.heatmap,
+                   cluster = cutree(Aheatmap$tree_row,
+                                     k = 4))
+head(CrabA.clust)
+```
+
+pull out just cluster column:
+```{r}
+clusters <- select(CrabA.clust, "cluster")
+head(clusters)
+```
+
+Rename the clusters in the rows to "cluster #" instead of just the number. 
+```{r}
+clusters <- data.frame(cluster = ifelse(clusters == 1, "cluster 1", ifelse(clusters == 2, "cluster 2", ifelse(clusters == 3, "cluster 3", "cluster 4"))))
+head(clusters)
 ```
 
 ```{r}
-crabA.stress <- left_join(crabA.heatmap, stress, by = "Trinity_ID")
+pheatmap(crabA.heatmap, scale = "row", cluster_row = TRUE, cluster_cols = FALSE, clustering_distance_rows = "euclidean", clustering_method = "average", annotation_row = clusters, show_rownames = FALSE, show_colnames = TRUE, treeheight_col = 80, legend = TRUE, color = heatmapBrBG, fontsize_col = 12, fontsize_row = 12)
+```
+
+### `join` count data of 217 stress response genes and cluster assignments with the annotated stress response genes table (stress) to get what the genes are doing:
+
+Make Trinity ID rownames into a column called "Trinity_ID" in CrabA.clust:
+Set Trinity_ID as row names:
+Set rownames as a column again:     
+```{r}
+CrabA.clust <- tibble::rownames_to_column(CrabA.clust, "Trinity_ID")
+head(CrabA.clust)
+```
+
+
+```{r}
+crabA.stress <- left_join(CrabA.clust, stress, by = "Trinity_ID")
 head(crabA.stress)
 ```
+this file is back up to 372 rows becuase of the duplicate Trinity_IDs. 
 
+write out file to analyses:
+```{r}
+write.table(crabA.stress, "../analyses/crabA.stress-clust.BLAST-GO.tab", sep = '\t', row.names = FALSE, quote = FALSE)
+```
 
+## Do same with Crab F: decreased infected
 
 
 
